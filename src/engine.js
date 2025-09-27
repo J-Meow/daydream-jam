@@ -2,22 +2,21 @@
 
 
 // KEYS
-funcs.handleKey = function ({ key, repeat, shiftKey, metaKey, ctrlKey }, type) {
-    var keyData = { key, repeat, shift: shiftKey, ctrl: ctrlKey || metaKey }
+F.handleKey = function ({ key, repeat }, type) {
     if (type === C.DOWN) {
-        if (keyData.repeat) {
+        if (repeat) {
             // ignore
         } else {
-            funcs.addKey(key)
+            F.addKey(key)
         }
     } else if (type === C.UP) {
-        funcs.removeKey(key)
+        F.removeKey(key)
     }
 }
-funcs.heldKey = game.keysHeld.includes.bind(game.keysHeld)
-funcs.isDown = game.keysDown.includes.bind(game.keysDown)
-funcs.isUp = game.keysUp.includes.bind(game.keysUp)
-funcs.addKey = function (key) {
+F.heldKey = game.keysHeld.includes.bind(game.keysHeld)
+F.isDown = game.keysDown.includes.bind(game.keysDown)
+F.isUp = game.keysUp.includes.bind(game.keysUp)
+F.addKey = function (key) {
     if (!game.keysDown.includes(key)) {
         game.keysDown.push(key)
     }
@@ -27,7 +26,7 @@ funcs.addKey = function (key) {
     }
     return false
 }
-funcs.removeKey = function (key) {
+F.removeKey = function (key) {
     if (!game.keysUp.includes(key)) {
         game.keysUp.push(key)
     }
@@ -39,8 +38,8 @@ funcs.removeKey = function (key) {
     return false
 }
 
-document.addEventListener("keydown", e => funcs.handleKey(e, C.DOWN))
-document.addEventListener("keyup", e => funcs.handleKey(e, C.UP))
+document.addEventListener("keydown", e => F.handleKey(e, C.DOWN))
+document.addEventListener("keyup", e => F.handleKey(e, C.UP))
 document.addEventListener("blur", e => {
     game.keysHeld.length = 0
     game.keysDown.length = 0
@@ -49,20 +48,31 @@ document.addEventListener("blur", e => {
 
 
 // SPRITES/RENDERING
-funcs.renderSprite = function (name, sheet, x, y, size, rotation) {
+F.renderSprite = function (sheet, name, x, y, size, rotation) {
     const s = game.sheets[sheet]
+    if (s == null) {
+        throw new RangeError(sheet == null ? "Sheet not specified" : "Sheet not found: " + sheet)
+    }
     const index = s.ids.indexOf(name)
+    if (index === -1) {
+        throw new RangeError(name == null ? "Name not specified" : "Name not found in sheet " + sheet + ": " + name)
+    }
     ctx.save()
     var scale = size || 1
-    ctx.scale(scale, scale)
     ctx.translate(x, y)
+    ctx.scale(scale, scale)
     if (rotation !== 0) ctx.rotate(rotation)
     const sw = s.spriteW, sh = s.spriteH
     const cols = s.imageW / sw
-    const sx = (index % cols) * sw
-    const sy = Math.floor(index / cols) * sh
+    const sx = Math.floor((index % cols) * sw)
+    const sy = Math.floor(Math.floor(index / cols) * sh)
     ctx.imageSmoothingEnabled = false
     ctx.drawImage(s.img, sx, sy, sw, sh, 0, 0, sw, sh)
+    if (debug) {
+        ctx.strokeStyle = "red"
+        ctx.lineWidth = 1
+        ctx.strokeRect(0.5, 0.5, sw-1, sh-1)
+    }
     ctx.restore()
 }
 
@@ -76,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
         sheet.img.onload = function () {
             if (++sheetsLoaded === totalSheets) {
                 // START
-                funcs.update()
+                F.update()
             }
         }
         sheet.img.onerror = e => {
@@ -86,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 })
 
-funcs.drawText = function (text, size = 24) {
+F.drawText = function (text, size = 24) {
     ctx.font = size + "px serif"
     // ctx.textBaseline="bottom"
     ctx.fillText(text, 10, 50)
@@ -94,12 +104,16 @@ funcs.drawText = function (text, size = 24) {
 
 
 // MISC
-funcs.addClickEvent = function (id, func) {
+F.addClickEvent = function (id, func) {
     document.getElementById(id).addEventListener("click", func)
 }
 
 
 // SPRITE INTERACTIONS
-funcs.isIntersecting = function (sprite) {
 
+/**
+ * @param {Item} sprite
+ */
+F.touchingPlayer = function (sprite) {
+    return Math.abs(sprite.x - player.x) < 1.000000001 && Math.abs(sprite.y - player.y) < 1.000000001
 }

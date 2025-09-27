@@ -1,5 +1,6 @@
 html {
     background: black;
+    user-select: none;
 }
 
 canvas {
