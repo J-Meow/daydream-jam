@@ -58,7 +58,7 @@ const player = {
     oldY: 0,
     x: 0,
     y: 0,
-    speed: 0.1
+    speed: 0.1,
 }
 
 /** @type {Record<string, Function>} A big object of functions. */
@@ -72,7 +72,7 @@ const game = {
     keysDown: [],
     keysUp: [],
     data: {
-        player: player
+        player: player,
     },
     canvas: canvas,
     ctx: ctx,
@@ -97,18 +97,38 @@ const game = {
     levelData: [
         {
             name: "Main Level",
-            keys: { "P": "main/player", "$": "main/coin", "_": "tiles/floor" },
-            items: [{ type: "P", x: 0, y: 0.4 }],
+            keys: { P: "main/player", $: "main/coin", _: "tiles/floor" },
+            items: [{ type: "P", x: 0, y: 13.4 }],
             addFunc: function (obj) {
                 // obj.
                 return obj
             },
-            map: ` $$$___`,
+            map: `                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+                    _
+  $ $ $             _
+________        _____
+
+         $
+
+          $
+        ______________________________________`,
         },
     ],
     consts: {
         DOWN: 0,
-        UP: 1
+        UP: 1,
     },
 }
 canvas.width = game.w
@@ -154,7 +174,11 @@ F.itemInteraction = function (item) {
     var touchingPlayer = F.touchingPlayer(item)
     if (item.type === "P") {
         var speed = player.speed
-        player.x += F.heldKey("ArrowLeft") ? -speed : (F.heldKey("ArrowRight") ? speed : 0)
+        player.x += F.heldKey("ArrowLeft")
+            ? -speed
+            : F.heldKey("ArrowRight")
+              ? speed
+              : 0
     } else if (debug) {
         if (touchingPlayer) {
             ctx.strokeStyle = "orange"
@@ -194,7 +218,8 @@ F.render = function () {
         var item = items[i]
         var type = item.type
         var split = lvl.keys[type].split("/")
-        if (type !== "P") F.renderSprite(split[0], split[1], item.x * 24, item.y * 24)
+        if (type !== "P")
+            F.renderSprite(split[0], split[1], item.x * 24, item.y * 24)
     }
     F.renderSprite("main", "player", player.x * 24, player.y * 24)
     ctx.restore()
@@ -230,7 +255,9 @@ F.update = function () {
 !(function () {
     let clickSFX = new Audio("static/assets/sfx/click.wav")
     clickSFX.volume = 0.5
-    Array.from(document.getElementsByTagName("button")).forEach(button => { button.onclick = () => clickSFX.cloneNode().play() })
+    Array.from(document.getElementsByTagName("button")).forEach((button) => {
+        button.onclick = () => clickSFX.cloneNode().play()
+    })
 
     document.addEventListener("DOMContentLoaded", function () {
         F.addClickEvent("playButton", () => {
@@ -259,5 +286,7 @@ F.update = function () {
         }
     })
 
-    canvas.addEventListener("contextmenu", function (e) { e.preventDefault() })
+    canvas.addEventListener("contextmenu", function (e) {
+        e.preventDefault()
+    })
 })()
