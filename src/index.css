@@ -92,6 +92,18 @@ canvas {
     transform: translate(-50%, 0);
 }
 
+#musicAndSoundsButton {
+    left: 50vw;
+    bottom: 2vh;
+    transform: translate(-275%, 0%)
+}
+
+#graphicsButton {
+    left: 50vw;
+    bottom: 2vh;
+    transform: translate(-275%, 200%)
+}
+
 .title {
     transform: translate(-50%, -1000%);
     font-size: 4vh;
