@@ -283,7 +283,7 @@ F.render = function () {
         if (type !== "P")
             F.renderSprite(split[0], split[1], item.x * 16, item.y * 16)
     }
-    F.renderSprite("main", "player", player.x * 24, player.y * 24)
+    F.renderSprite("main", "player", player.x * 16, player.y * 16)
     ctx.restore()
     requestAnimationFrame(F.render)
 }
