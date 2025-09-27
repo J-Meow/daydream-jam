@@ -56,12 +56,10 @@ canvas {
 
 .button:hover {
     background-color: #d7d4d4;
-    transform: translateY(8px);
 }
 
 .button:active {
     background-color: #aaa3a3;
-    transform: translateY(12px);
 }
 
 #playButton {
@@ -88,6 +86,12 @@ canvas {
     transform: translate(-50%, 0);
 }
 
+#settingsBackButton {
+    left: 50vw;
+    bottom: 2vh;
+    transform: translate(-50%, 0);
+}
+
 .title {
     transform: translate(-50%, -1000%);
     font-size: 4vh;
@@ -97,6 +101,15 @@ canvas {
 }
 
 .aboutContent {
+    position: fixed;
+    left: 50vw;
+    top: 50vh;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    max-width: 80vw;
+}
+
+.settingsContent {
     position: fixed;
     left: 50vw;
     top: 50vh;

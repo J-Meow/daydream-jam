@@ -97,6 +97,14 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("menu").style.display = "block"
         document.getElementById("about").style.display = "none"
     })
+    funcs.addClickEvent("settingsButton", () => {
+        document.getElementById("menu").style.display = "none"
+        document.getElementById("settings").style.display = "block"
+    })
+    funcs.addClickEvent("settingsBackButton", () => {
+        document.getElementById("menu").style.display = "block"
+        document.getElementById("settings").style.display = "none"
+    })
 })
 
 canvas.addEventListener("contextmenu", function (e) { e.preventDefault() })
