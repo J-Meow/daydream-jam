@@ -23,6 +23,7 @@ var enableDebug = true // Shift must be held as well
  * @property {number} id A unique identifier for the thing.
  * @property {number} x The x-coordinate of the thing.
  * @property {number} y The y-coordinate of the thing.
+ * @property {object} data The y-coordinate of the thing.
  */
 
 /**
@@ -163,6 +164,21 @@ F.itemInteraction = function (item) {
     }
 }
 
+var activeLevel = null
+F.loadLevel = function (id) {
+    activeLevel = game.levelData[id]
+    var items = activeLevel.items
+    for (let i = 0; i < items.length; i++) {
+        var item = items[i]
+        if (item.type === "P") {
+            player.x = item.x
+            player.y = item.y
+        }
+    }
+}
+
+F.loadLevel(0)
+
 // Main updating
 var lastTime = Date.now()
 var frame = 0
@@ -170,7 +186,7 @@ var frame = 0
  * Main rendering function.
  */
 F.render = function () {
-    var lvl = game.levelData[0]
+    var lvl = activeLevel
     var items = lvl.data
     ctx.save()
     ctx.scale(cameraScale, cameraScale)
@@ -198,7 +214,7 @@ F.update = function () {
         document.getElementById("settings").style.display = "none"
     } else {
         // logic
-        var lvl = game.levelData[0]
+        var lvl = activeLevel
         var items = lvl.data
         for (let i = 0; i < items.length; i++) {
             var item = items[i]
@@ -237,6 +253,10 @@ F.update = function () {
             document.getElementById("menu").removeAttribute("style")
             document.getElementById("settings").style.display = "none"
         })
+
+        if (enableDebug) {
+            document.getElementById("playButton").click()
+        }
     })
 
     canvas.addEventListener("contextmenu", function (e) { e.preventDefault() })
