@@ -1,7 +1,9 @@
 "use strict"
 const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
-const l = console.log
+const log = console.log
+
+// Main game objects
 const player = {
     oldX: 0,
     oldY: 0,
@@ -57,18 +59,31 @@ const C = game.consts
 
 funcs.spriteInteraction = function (sprite) {
     var interactions = {
-        hovering: funcs.isHovering(sprite)
+        intersecting: funcs.isIntersecting(sprite)
     }
 }
 
+// Main updating
 var frame = 0
 funcs.render = function () {
     requestAnimationFrame(funcs.render)
 }
 funcs.update = function () {
     ctx.clearRect(0, 0, game.w, game.h)
-    renderSprite("player", "main", 0, 0)
+    funcs.renderSprite("player", "main", 0, 0)
+    if (funcs.isDown("Escape")) {
+        canvas.style.display = "none"
+        document.getElementById("menu").removeAttribute("style")
+    }
     game.keysDown.length = 0
     game.keysUp.length = 0
     setTimeout(funcs.update, frame % 3 === 0 ? 34 : 33)
 }
+
+// Add events to buttons
+document.addEventListener("DOMContentLoaded", function () {
+    funcs.addClickEvent("playButton", () => {
+        document.getElementById("menu").style.display = "none"
+        canvas.removeAttribute("style")
+    })
+})

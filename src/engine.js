@@ -15,6 +15,8 @@ funcs.handleKey = function ({ key, repeat, shiftKey, metaKey, ctrlKey }, type) {
     }
 }
 funcs.heldKey = game.keysHeld.includes.bind(game.keysHeld)
+funcs.isDown = game.keysDown.includes.bind(game.keysDown)
+funcs.isUp = game.keysUp.includes.bind(game.keysUp)
 funcs.addKey = function (key) {
     if (!game.keysDown.includes(key)) {
         game.keysDown.push(key)
@@ -47,7 +49,7 @@ document.addEventListener("blur", e => {
 
 
 // SPRITES/RENDERING
-function renderSprite(name, sheet, x, y, size, rotation) {
+funcs.renderSprite = function (name, sheet, x, y, size, rotation) {
     const s = game.sheets[sheet]
     const index = s.ids.indexOf(name)
     ctx.save()
@@ -84,8 +86,20 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 })
 
-function drawText() {
-    const ctx = document.getElementById("canvas").getContext("2d");
-    ctx.font = "48px serif";
-    ctx.fillText("Hello world", 10, 50);
+funcs.drawText = function (text, size = 24) {
+    ctx.font = size + "px serif"
+    // ctx.textBaseline="bottom"
+    ctx.fillText(text, 10, 50)
+}
+
+
+// MISC
+funcs.addClickEvent = function (id, func) {
+    document.getElementById(id).addEventListener("click", func)
+}
+
+
+// SPRITE INTERACTIONS
+funcs.isIntersecting = function (sprite) {
+
 }
