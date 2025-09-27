@@ -8,6 +8,8 @@ var enableDebug = true // Shift must be held as well
  * @typedef {object} Player
  * @property {number} x X-coordinate of player.
  * @property {number} y Y-coordinate of player.
+ * @property {number} dx Delta difference between frames
+ * @property {number} dx Y-coordinate of player.
  * @property {number} oldX Old x-coordinate of player.
  * @property {number} oldY Old y-coordinate of player.
  * @property {number} speed Speed when moving left or right.
@@ -62,8 +64,8 @@ var F = {}
 
 /** @type {Game} The main game. */
 const game = {
-    w: 1600,
-    h: 900,
+    w: 1920,
+    h: 1080,
     keysHeld: [],
     keysDown: [],
     keysUp: [],
@@ -81,17 +83,25 @@ const game = {
             imageH: 24,
             ids: ["player", "coin", "!", "?"],
         },
+        tiles: {
+            src: "./static/assets/sprites/tiles.png",
+            spriteW: 24,
+            spriteH: 24,
+            imageW: 24,
+            imageH: 24,
+            ids: ["floor"],
+        },
     },
     levelData: [
         {
             name: "Main Level",
-            keys: { "P": "main/player", "$": "main/coin" },
+            keys: { "P": "main/player", "$": "main/coin", "_": "tiles/floor" },
             items: [{ type: "P", x: 0, y: 0.4 }],
             addFunc: function (obj) {
                 // obj.
                 return obj
             },
-            map: ` $$$`,
+            map: ` $$$___`,
         },
     ],
     consts: {
@@ -151,11 +161,21 @@ F.itemInteraction = function (item) {
 }
 
 // Main updating
+var lastTime = Date.now()
 var frame = 0
 /**
  * Main rendering function.
  */
 F.render = function () {
+    var lvl = game.levelData[0]
+    var items = lvl.data
+    for (let i = 0; i < items.length; i++) {
+        var item = items[i]
+        var type = item.type
+        var split = lvl.keys[type].split("/")
+        if (type !== "P") F.renderSprite(split[0], split[1], item.x * 24, item.y * 24)
+    }
+    F.renderSprite("main", "player", player.x * 24, player.y * 24)
     requestAnimationFrame(F.render)
 }
 /**
@@ -176,12 +196,8 @@ F.update = function () {
         var items = lvl.data
         for (let i = 0; i < items.length; i++) {
             var item = items[i]
-            var type = item.type
-            var split = lvl.keys[type].split("/")
             F.itemInteraction(item)
-            if (type !== "P") F.renderSprite(split[0], split[1], item.x * 24, item.y * 24)
         }
-        F.renderSprite("main", "player", player.x * 24, player.y * 24)
     }
     game.keysDown.length = 0
     game.keysUp.length = 0
