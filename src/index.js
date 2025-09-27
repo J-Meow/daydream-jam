@@ -16,9 +16,10 @@ const game = {
     keysHeld: [],
     keysDown: [],
     keysUp: [],
-    data: {},
+    data: {
+        player: player
+    },
     funcs: {},
-    player: player,
     canvas: canvas,
     ctx: ctx,
     currentSprites: [],
@@ -35,15 +36,17 @@ const game = {
     levelData: [
         { // Note that each level in levelData gains a new property `data` containing an array of sprites.
             name: "Main Level",
-            keys: { "#": "main/player" }, // These are the keys that convert a character in the map to a sprite; sprite interactions are handled in spriteInteraction
-            items: [], // Additional items that might need to be added to the object. This, for example, can used to add objects in partial coordinates.
+            keys: { "P": "main/player" }, // These are the keys that convert a character in the map to a sprite; sprite interactions are handled in spriteInteraction
+            items: [{ type: "P", x: 0, y: 0 }], // Additional items that might need to be added to the object. This, for example, can used to add objects in partial coordinates.
             addFunc: function (obj) {
                 // Modify how certain objects are created at runtime (from the map, not items).
-                obj
+                // obj.
                 return obj
             },
             map:
-                `asdfasdfsadf`
+                `P
+
+_`
         }
     ],
     consts: {
@@ -59,8 +62,11 @@ const C = game.consts
 
 funcs.spriteInteraction = function (sprite) {
     var interactions = {
-        intersecting: funcs.isIntersecting(sprite)
+        intersecting: funcs.isIntersecting(sprite),
+        over: funcs.wentOver(sprite),
+        out: funcs.wentOut(sprite)
     }
+    funcs.renderSprite("player", "main", 0, 0)
 }
 
 // Main updating
@@ -70,14 +76,16 @@ funcs.render = function () {
 }
 funcs.update = function () {
     ctx.clearRect(0, 0, game.w, game.h)
-    funcs.renderSprite("player", "main", 0, 0)
+    if (funcs.isDown)
+
+        game.keysDown.length = 0
+    game.keysUp.length = 0
     if (funcs.isDown("Escape")) {
         canvas.style.display = "none"
         document.getElementById("menu").removeAttribute("style")
+    } else {
+        setTimeout(funcs.update, frame % 3 === 0 ? 34 : 33)
     }
-    game.keysDown.length = 0
-    game.keysUp.length = 0
-    setTimeout(funcs.update, frame % 3 === 0 ? 34 : 33)
 }
 
 // Add events to buttons
@@ -87,3 +95,5 @@ document.addEventListener("DOMContentLoaded", function () {
         canvas.removeAttribute("style")
     })
 })
+
+canvas.addEventListener("contextmenu", function (e) { e.preventDefault() })

@@ -26,6 +26,7 @@ canvas {
         height: 100vh;
     }
 }
+
 @media (max-width: 177.7777777778vh) {
     canvas {
         width: 100vw;
@@ -35,14 +36,13 @@ canvas {
 
 @font-face {
     font-family: "press-start-regular";
-    src: url("../static/assets/font/PressStart2P-Regular.ttf")
-        format("truetype");
+    src: url("../static/assets/font/PressStart2P-Regular.ttf") format("truetype");
 }
 
 .button {
     color: black;
     border-radius: none;
-    transition: background-color 250ms;
+    transition: background-color 250ms, transform 200ms;
     font-family: "press-start-regular", sans-serif;
     border: none;
     position: fixed;
@@ -56,6 +56,12 @@ canvas {
 
 .button:hover {
     background-color: #d7d4d4;
+    transform: translateY(8px);
+}
+
+.button:active {
+    background-color: #aaa3a3;
+    transform: translateY(12px);
 }
 
 #playButton {
@@ -79,10 +85,6 @@ canvas {
 #title {
     transform: translate(-50%, -1000%);
     font-size: 4vh;
-}
-
-#infonotice {
-    transform: translate(-425%, 2500%)
 }
 
 .text {
