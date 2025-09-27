@@ -19,3 +19,17 @@ canvas {
     image-rendering: pixelated;
     -ms-interpolation-mode: nearest-neighbor;
 }
+
+@media (min-width: 177.7777777778vh) {
+    canvas {
+        width: calc(calc(100vh / 9) * 16);
+        height: 100vh;
+    }
+}
+@media (max-width: 177.7777777778vh) {
+    canvas {
+        width: 100vw;
+        height: calc(calc(100vw / 16) * 9);
+    }
+}
+
