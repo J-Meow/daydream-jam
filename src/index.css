@@ -1,5 +1,5 @@
-* {
-    background-color: black;
+html {
+    background: black;
 }
 
 canvas {
@@ -82,15 +82,30 @@ canvas {
     transform: translate(-50%, 100%);
 }
 
-#title {
+#aboutBackButton {
+    left: 50vw;
+    bottom: 2vh;
+    transform: translate(-50%, 0);
+}
+
+.title {
     transform: translate(-50%, -1000%);
     font-size: 4vh;
+    position: fixed;
+    left: 50vw;
+    top: 50vh;
+}
+
+.aboutContent {
+    position: fixed;
+    left: 50vw;
+    top: 50vh;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    max-width: 80vw;
 }
 
 .text {
     color: white;
     font-family: "press-start-regular", sans-serif;
-    position: fixed;
-    left: 50vw;
-    top: 50vh;
 }
