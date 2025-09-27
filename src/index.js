@@ -259,6 +259,7 @@ F.update = function () {
     }
     game.keysDown.length = 0
     game.keysUp.length = 0
+    camera.xCenter = camera.xCenter + (player.x - camera.xCenter) * 0.1
     setTimeout(F.update, frame % 3 === 0 ? 34 : 33)
 }
 
