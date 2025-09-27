@@ -61,6 +61,11 @@ const player = {
     speed: 0.1,
 }
 
+const camera = {
+    xCenter: 0,
+    yCenter: 18,
+}
+
 /** @type {Record<string, Function>} A big object of functions. */
 var F = {}
 
@@ -213,6 +218,10 @@ F.render = function () {
     var lvl = activeLevel
     var items = lvl.data
     ctx.save()
+    ctx.translate(
+        -camera.xCenter * 24 * cameraScale + game.w / 2,
+        -camera.yCenter * 24 * cameraScale + game.h / 2,
+    )
     ctx.scale(cameraScale, cameraScale)
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
