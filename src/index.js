@@ -85,18 +85,18 @@ const game = {
     sheets: {
         main: {
             src: "./static/assets/sprites/main.png",
-            spriteW: 24,
-            spriteH: 24,
-            imageW: 96,
-            imageH: 24,
+            spriteW: 16,
+            spriteH: 16,
+            imageW: 16 * 3,
+            imageH: 16,
             ids: ["player", "!", "?"],
         },
         tiles: {
             src: "./static/assets/sprites/tiles.png",
-            spriteW: 24,
-            spriteH: 24,
-            imageW: 24 * 5,
-            imageH: 24 * 5,
+            spriteW: 16,
+            spriteH: 16,
+            imageW: 16 * 5,
+            imageH: 16 * 5,
             ids: [
                 "{",
                 "^",
@@ -239,7 +239,7 @@ F.itemInteraction = function (item) {
         if (touchingPlayer) {
             ctx.strokeStyle = "orange"
             ctx.lineWidth = 2
-            ctx.strokeRect(item.x * 24 + 1, item.y * 24 + 1, 22, 22)
+            ctx.strokeRect(item.x * 16 + 1, item.y * 16 + 1, 22, 22)
         }
     }
 }
@@ -272,8 +272,8 @@ F.render = function () {
     var items = lvl.data
     ctx.save()
     ctx.translate(
-        Math.floor(-camera.xCenter * 24 * cameraScale + game.w / 2),
-        Math.floor(-camera.yCenter * 24 * cameraScale + game.h / 2),
+        Math.floor(-camera.xCenter * 16 * cameraScale + game.w / 2),
+        Math.floor(-camera.yCenter * 16 * cameraScale + game.h / 2),
     )
     ctx.scale(cameraScale, cameraScale)
     for (let i = 0; i < items.length; i++) {
@@ -281,7 +281,7 @@ F.render = function () {
         var type = item.type
         var split = lvl.keys[type].split("/")
         if (type !== "P")
-            F.renderSprite(split[0], split[1], item.x * 24, item.y * 24)
+            F.renderSprite(split[0], split[1], item.x * 16, item.y * 16)
     }
     F.renderSprite("main", "player", player.x * 24, player.y * 24)
     ctx.restore()
