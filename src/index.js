@@ -180,9 +180,9 @@ F.itemInteraction = function (item) {
     var touchingPlayer = F.touchingPlayer(item)
     if (item.type === "P") {
         if (F.heldKey("ArrowRight") && !F.heldKey("ArrowLeft")) {
-            player.xVelocity = 0.3
+            player.xVelocity = 0.15
         } else if (F.heldKey("ArrowLeft") && !F.heldKey("ArrowRight")) {
-            player.xVelocity = -0.3
+            player.xVelocity = -0.15
         }
         player.x += player.xVelocity
         player.xVelocity *= 0.8
@@ -204,6 +204,8 @@ F.loadLevel = function (id) {
         if (item.type === "P") {
             player.x = item.x
             player.y = item.y
+            camera.xCenter = player.x
+            camera.yCenter = player.y
         }
     }
 }
@@ -259,8 +261,9 @@ F.update = function () {
     }
     game.keysDown.length = 0
     game.keysUp.length = 0
-    camera.xCenter = camera.xCenter + (player.x - camera.xCenter) * 0.1
-    setTimeout(F.update, frame % 3 === 0 ? 34 : 33)
+    camera.xCenter = camera.xCenter + (player.x - camera.xCenter) * 0.05
+    camera.yCenter = camera.yCenter + (player.y - camera.yCenter) * 0.05
+    setTimeout(F.update, 1000 / 60)
 }
 
 // Add events to buttons
