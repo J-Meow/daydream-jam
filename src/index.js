@@ -89,7 +89,7 @@ const game = {
             spriteH: 24,
             imageW: 96,
             imageH: 24,
-            ids: ["player", "coin", "!", "?"],
+            ids: ["player", "!", "?"],
         },
         tiles: {
             src: "./static/assets/sprites/tiles.png",
@@ -97,13 +97,13 @@ const game = {
             spriteH: 24,
             imageW: 24,
             imageH: 24,
-            ids: ["floor"],
+            ids: ["{", "0", "}", "S", "s", "[", "1", "]", "f", "$", "B", "b", ".", ":", "", "", "", "", ";", "", "", "", "", ","],
         },
     },
     levelData: [
         {
             name: "Main Level",
-            keys: { P: "main/player", $: "main/coin", _: "tiles/floor" },
+            keys: { P: "main/player", "{", "0", "}", "S", "s", "[", "1", "]", "f", "$", "B", "b", ".", ":", "", "", "", "", ";", "", "", "", "", "," },
             items: [{ type: "P", x: 0, y: 13.4 }],
             addFunc: function (obj) {
                 // obj.
@@ -262,6 +262,10 @@ F.update = function () {
         for (let i = 0; i < items.length; i++) {
             var item = items[i]
             F.itemInteraction(item)
+            item.dx = item.x - item.px
+            item.dy = item.y - item.py
+            item.px = item.x
+            item.py = item.y
         }
     }
     game.keysDown.length = 0
