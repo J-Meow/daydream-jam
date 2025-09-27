@@ -33,3 +33,14 @@ canvas {
     }
 }
 
+@font-face {
+      font-family: "press-start-regular";
+      src: url("../static/assets/font/PressStart2P-Regular.ttf") format("truetype");
+    }
+
+#playButton {
+    color: antiquewhite;
+    border-radius: 5px;
+    font-family: "press-start-regular", sans-serif;
+}
+
