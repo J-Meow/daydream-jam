@@ -58,12 +58,13 @@ const player = {
     oldY: 0,
     x: 0,
     y: 0,
-    speed: 0.1,
+    xVelocity: 0,
+    yVelocity: 0,
 }
 
 const camera = {
     xCenter: 0,
-    yCenter: 18,
+    yCenter: 15,
 }
 
 /** @type {Record<string, Function>} A big object of functions. */
@@ -178,12 +179,13 @@ game.levelData.forEach(F.addDataToLevel) // Add data to each level
 F.itemInteraction = function (item) {
     var touchingPlayer = F.touchingPlayer(item)
     if (item.type === "P") {
-        var speed = player.speed
-        player.x += F.heldKey("ArrowLeft")
-            ? -speed
-            : F.heldKey("ArrowRight")
-              ? speed
-              : 0
+        if (F.heldKey("ArrowRight") && !F.heldKey("ArrowLeft")) {
+            player.xVelocity = 0.3
+        } else if (F.heldKey("ArrowLeft") && !F.heldKey("ArrowRight")) {
+            player.xVelocity = -0.3
+        }
+        player.x += player.xVelocity
+        player.xVelocity *= 0.8
     } else if (debug) {
         if (touchingPlayer) {
             ctx.strokeStyle = "orange"
