@@ -59,7 +59,7 @@ F.renderSprite = function (sheet, name, x, y, size, rotation) {
     }
     ctx.save()
     var scale = size || 1
-    ctx.translate(x, y)
+    ctx.translate(Math.floor(x), Math.floor(y))
     ctx.scale(scale, scale)
     if (rotation !== 0) ctx.rotate(rotation)
     const sw = s.spriteW, sh = s.spriteH
@@ -71,7 +71,7 @@ F.renderSprite = function (sheet, name, x, y, size, rotation) {
     if (debug) {
         ctx.strokeStyle = "red"
         ctx.lineWidth = 1
-        ctx.strokeRect(0.5, 0.5, sw-1, sh-1)
+        ctx.strokeRect(0.5, 0.5, sw - 1, sh - 1)
     }
     ctx.restore()
 }

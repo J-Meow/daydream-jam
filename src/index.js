@@ -145,7 +145,6 @@ F.itemInteraction = function (item) {
         if (touchingPlayer) {
             ctx.strokeStyle = "orange"
             ctx.lineWidth = 2
-            console.log(item.x * 24, item.y * 24)
             ctx.strokeRect(item.x * 24 + 1, item.y * 24 + 1, 22, 22)
         }
     }
