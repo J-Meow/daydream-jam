@@ -116,6 +116,16 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("menu").style.display = "block"
         document.getElementById("settings").style.display = "none"
     })
+    funcs.addClickEvent("musicAndSoundsButton", () => {
+        document.getElementById("settings").style.display = "none"
+        document.getElementById("menu").style.display = "none"
+        document.getElementById("musicAndSoundsSettings").style.display = "block"
+    })
+    funcs.addClickEvent("musicAndSoundsBackButton", () => {
+        document.getElementById("settings").style.display = "block"
+        document.getElementById("menu").style.display = "none"
+        document.getElementById("musicAndSoundsSettings").style.display = "none"
+    })
 })
 
 canvas.addEventListener("contextmenu", function (e) { e.preventDefault() })
