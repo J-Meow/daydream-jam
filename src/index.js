@@ -88,7 +88,6 @@ let clickSFX = new Audio("static/assets/sfx/click.wav")
 clickSFX.volume = 0.5;
 
 const buttons = document.querySelectorAll(".button");
-
 buttons.forEach(button => {
         button.addEventListener('click', () => {
             clickSFX.play();
@@ -100,27 +99,22 @@ document.addEventListener("DOMContentLoaded", function () {
     funcs.addClickEvent("playButton", () => {
         document.getElementById("menu").style.display = "none"
         canvas.removeAttribute("style")
-        // clickSFX.play().then(r => console.log("sfx failed"))
     })
     funcs.addClickEvent("aboutButton", () => {
         document.getElementById("menu").style.display = "none"
         document.getElementById("about").style.display = "block"
-        // clickSFX.play().then(r => console.log("sfx failed"))
     })
     funcs.addClickEvent("aboutBackButton", () => {
         document.getElementById("menu").style.display = "block"
         document.getElementById("about").style.display = "none"
-        // clickSFX.play().then(r => console.log("sfx failed"))
     })
     funcs.addClickEvent("settingsButton", () => {
         document.getElementById("menu").style.display = "none"
         document.getElementById("settings").style.display = "block"
-        // clickSFX.play().then(r => console.log("sfx failed"))
     })
     funcs.addClickEvent("settingsBackButton", () => {
         document.getElementById("menu").style.display = "block"
         document.getElementById("settings").style.display = "none"
-        // clickSFX.play().then(r => console.log("sfx failed"))
     })
 })
 
