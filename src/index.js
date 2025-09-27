@@ -184,8 +184,13 @@ F.itemInteraction = function (item) {
         } else if (F.heldKey("ArrowLeft") && !F.heldKey("ArrowRight")) {
             player.xVelocity = -0.15
         }
+        if (game.keysDown.includes("ArrowUp")) {
+            player.yVelocity = -0.2
+        }
         player.x += player.xVelocity
         player.xVelocity *= 0.8
+        player.y += player.yVelocity
+        player.yVelocity += 0.008
     } else if (debug) {
         if (touchingPlayer) {
             ctx.strokeStyle = "orange"
