@@ -42,6 +42,7 @@ canvas {
 .button {
     color: black;
     border-radius: none;
+    transition: background-color 250ms;
     font-family: "press-start-regular", sans-serif;
     border: none;
     position: fixed;
@@ -49,12 +50,12 @@ canvas {
     margin: 0;
     cursor: pointer;
     font-size: 2vh;
-    background: white;
+    background-color: white;
     width: 400px;
 }
 
 .button:hover {
-    background: whitesmoke;
+    background-color: #d7d4d4;
 }
 
 #playButton {
@@ -83,5 +84,4 @@ canvas {
     top: 50vh;
     transform: translate(-50%, -1250%);
     font-size: 4vh;
-
 }
