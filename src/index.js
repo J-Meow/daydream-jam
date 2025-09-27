@@ -70,17 +70,17 @@ funcs.render = function () {
 }
 funcs.update = function () {
     ctx.clearRect(0, 0, game.w, game.h)
-    if (funcs.isDown)
 
-        game.keysDown.length = 0
-    game.keysUp.length = 0
     if (funcs.isDown("Escape")) {
         canvas.style.display = "none"
         document.getElementById("menu").style.display = "block"
         document.getElementById("about").style.display = "none"
     } else {
-        setTimeout(funcs.update, frame % 3 === 0 ? 34 : 33)
+        // logic
     }
+    game.keysDown.length = 0
+    game.keysUp.length = 0
+    setTimeout(funcs.update, frame % 3 === 0 ? 34 : 33)
 }
 
 // Add events to buttons
