@@ -14,23 +14,19 @@ const game = {
     ctx: ctx,
     sheets: {
         main: {
-            src: './static/assets/sprites/main.png',
+            src: "./static/assets/sprites/main.png",
             spriteW: 96,
             spriteH: 24,
             imageW: 24,
             imageH: 24,
             ids: ["player", "coin", "!", "?"],
-        }
+        },
     },
-    levelData: [
-        [
-            { type: 1234 }
-        ]
-    ],
+    levelData: [[{ type: 1234 }]],
     consts: {
         DOWN: 0,
-        UP: 1
-    }
+        UP: 1,
+    },
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -46,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 funcs.update()
             }
         }
-        sheet.img.onerror = e => {
+        sheet.img.onerror = (e) => {
             console.warn(e)
         }
         sheet.img.src = sheet.src
@@ -62,14 +58,9 @@ funcs.handleKey = function ({ key, repeat, shiftKey, metaKey, ctrlKey }, type) {
         if (keyData.repeat) {
             // ignore
         } else {
-            if (keyData.shift) funcs.addKey("shift")
-            else if (keyData.ctrl) funcs.addKey("ctrl")
-            else funcs.addKey(key)
-
+            funcs.addKey(key)
         }
     } else if (type === C.UP) {
-        if (keyData.shift) funcs.removeKey("shift")
-        else if (keyData.ctrl) funcs.removeKey("ctrl")
         funcs.removeKey(key)
     }
 }
@@ -115,7 +106,8 @@ function renderSprite(name, sheet, x, y, rotation) {
     ctx.save()
     ctx.translate(x, y)
     if (rotation !== 0) ctx.rotate(rotation)
-    const sw = s.spriteW, sh = s.spriteH
+    const sw = s.spriteW,
+        sh = s.spriteH
     const cols = s.imageW / sw
     const sx = (index % cols) * sw
     const sy = Math.floor(index / cols) * sh
@@ -126,10 +118,11 @@ function renderSprite(name, sheet, x, y, rotation) {
     ctx.restore()
 }
 
-document.addEventListener("keydown", e => funcs.handleKey(e, C.DOWN))
-document.addEventListener("keyup", e => funcs.handleKey(e, C.UP))
-document.addEventListener("blur", e => {
+document.addEventListener("keydown", (e) => funcs.handleKey(e, C.DOWN))
+document.addEventListener("keyup", (e) => funcs.handleKey(e, C.UP))
+document.addEventListener("blur", (e) => {
     game.keysHeld.length = 0
     game.keysDown.length = 0
     game.keysUp.length = 0
 })
+
