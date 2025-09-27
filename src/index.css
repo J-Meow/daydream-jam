@@ -105,6 +105,18 @@ canvas {
     transform: translate(-275%, 200%)
 }
 
+#musicAndSoundsBackButton {
+    left: 50vw;
+    bottom: 2vh;
+    transform: translate(-50%, 0);
+}
+
+#SFXvolume {
+    left: 50vw;
+    bottom: 2vh;
+    transform: translate(400%, 2000%);
+}
+
 .title {
     transform: translate(-50%, -1000%);
     font-size: 4vh;
