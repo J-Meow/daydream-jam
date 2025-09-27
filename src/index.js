@@ -2,6 +2,7 @@
 const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
+var cameraScale = 4
 var enableDebug = true // Shift must be held as well
 
 /**
@@ -109,6 +110,8 @@ const game = {
         UP: 1
     },
 }
+canvas.width = game.w
+canvas.height = game.h
 
 var debug = false // Temp, based on if shift key is held
 var data = game.data
@@ -169,6 +172,8 @@ var frame = 0
 F.render = function () {
     var lvl = game.levelData[0]
     var items = lvl.data
+    ctx.save()
+    ctx.scale(cameraScale, cameraScale)
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
         var type = item.type
@@ -176,6 +181,7 @@ F.render = function () {
         if (type !== "P") F.renderSprite(split[0], split[1], item.x * 24, item.y * 24)
     }
     F.renderSprite("main", "player", player.x * 24, player.y * 24)
+    ctx.restore()
     requestAnimationFrame(F.render)
 }
 /**
