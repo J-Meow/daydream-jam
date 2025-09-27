@@ -75,6 +75,7 @@ funcs.update = function () {
         canvas.style.display = "none"
         document.getElementById("menu").style.display = "block"
         document.getElementById("about").style.display = "none"
+        document.getElementById("settings").style.display = "none"
     } else {
         // logic
     }
