@@ -1,6 +1,7 @@
 "use strict"
 const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
+const l = console.log
 const game = {
     w: 1600,
     h: 900,
@@ -13,11 +14,11 @@ const game = {
     ctx: ctx,
     sheets: {
         main: {
-            src: 'assets/main.png',
-            spriteW: 32,
-            spriteH: 16,
-            imageW: 16,
-            imageH: 16,
+            src: './static/assets/sprites/main.png',
+            spriteW: 96,
+            spriteH: 24,
+            imageW: 24,
+            imageH: 24,
             ids: ["player", "coin", "!", "?"],
         }
     },
@@ -32,28 +33,44 @@ const game = {
     }
 }
 
-for (let s in game.sheets) {
-    let sheet = game.sheets[s]
-    sheet.img = new Image(sheet.src)
-}
+document.addEventListener("DOMContentLoaded", function () {
+    var sheetsLoaded = 0
+    var keys = Object.keys(game.sheets)
+    var totalSheets = keys.length
+    keys.forEach(function (s) {
+        let sheet = game.sheets[s]
+        sheet.img = new Image()
+        sheet.img.onload = function () {
+            if (++sheetsLoaded === totalSheets) {
+                // START
+                funcs.update()
+            }
+        }
+        sheet.img.onerror = e => {
+            console.warn(e)
+        }
+        sheet.img.src = sheet.src
+    })
+})
 
 var data = game.data
 var funcs = game.funcs
 const C = game.consts
-funcs.handleKey = function (type, { key, repeat, shiftKey, metaKey, ctrlKey }) {
+funcs.handleKey = function ({ key, repeat, shiftKey, metaKey, ctrlKey }, type) {
     var keyData = { key, repeat, shift: shiftKey, ctrl: ctrlKey || metaKey }
     if (type === C.DOWN) {
         if (keyData.repeat) {
             // ignore
         } else {
-            if (held) funcs.addKey(key)
             if (keyData.shift) funcs.addKey("shift")
-            if (keyData.ctrl) funcs.addKey("ctrl")
+            else if (keyData.ctrl) funcs.addKey("ctrl")
+            else funcs.addKey(key)
+
         }
     } else if (type === C.UP) {
-        if (held) funcs.removeKey(key)
         if (keyData.shift) funcs.removeKey("shift")
-        if (keyData.ctrl) funcs.removeKey("ctrl")
+        else if (keyData.ctrl) funcs.removeKey("ctrl")
+        funcs.removeKey(key)
     }
 }
 funcs.heldKey = game.keysHeld.includes.bind(game.keysHeld)
@@ -68,12 +85,12 @@ funcs.addKey = function (key) {
     return false
 }
 funcs.removeKey = function (key) {
-    if (!keysUp.includes(key)) {
-        keysUp.push(key)
+    if (!game.keysUp.includes(key)) {
+        game.keysUp.push(key)
     }
-    var index = keysHeld.indexOf(key)
+    var index = game.keysHeld.indexOf(key)
     if (index !== -1) {
-        keysHeld.splice(index, 1)
+        game.keysHeld.splice(index, 1)
         return true
     }
     return false
@@ -86,6 +103,7 @@ funcs.render = function () {
 funcs.update = function () {
     ctx.clearRect(0, 0, game.w, game.h)
     renderSprite("player", "main", 0, 0)
+    console.log(game.keysDown, game.keysUp, game.keysHeld)
     game.keysDown.length = 0
     game.keysUp.length = 0
     setTimeout(funcs.update, frame % 3 === 0 ? 34 : 33)
@@ -93,7 +111,6 @@ funcs.update = function () {
 
 function renderSprite(name, sheet, x, y, rotation) {
     const s = game.sheets[sheet]
-    console.log(s)
     const index = s.ids.indexOf(name)
     ctx.save()
     ctx.translate(x, y)
@@ -109,14 +126,10 @@ function renderSprite(name, sheet, x, y, rotation) {
     ctx.restore()
 }
 
-document.addEventListener("resize", game.handleResize)
-document.addEventListener("click", game.handleClick)
-document.addEventListener("keydown", e => game.handleKey(e, C.DOWN))
-document.addEventListener("keyup", e => game.handleKey(e, C.UP))
+document.addEventListener("keydown", e => funcs.handleKey(e, C.DOWN))
+document.addEventListener("keyup", e => funcs.handleKey(e, C.UP))
 document.addEventListener("blur", e => {
     game.keysHeld.length = 0
     game.keysDown.length = 0
     game.keysUp.length = 0
 })
-
-funcs.update()
