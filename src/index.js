@@ -221,8 +221,8 @@ F.render = function () {
     var items = lvl.data
     ctx.save()
     ctx.translate(
-        -camera.xCenter * 24 * cameraScale + game.w / 2,
-        -camera.yCenter * 24 * cameraScale + game.h / 2,
+        Math.floor(-camera.xCenter * 24 * cameraScale + game.w / 2),
+        Math.floor(-camera.yCenter * 24 * cameraScale + game.h / 2),
     )
     ctx.scale(cameraScale, cameraScale)
     for (let i = 0; i < items.length; i++) {
