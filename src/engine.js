@@ -1,6 +1,5 @@
 // Sprite, key, and spriteInteraction called functions are stuffed here
 
-
 // KEYS
 F.handleKey = function ({ key, repeat }, type) {
     if (type === C.DOWN) {
@@ -38,31 +37,37 @@ F.removeKey = function (key) {
     return false
 }
 
-document.addEventListener("keydown", e => F.handleKey(e, C.DOWN))
-document.addEventListener("keyup", e => F.handleKey(e, C.UP))
-document.addEventListener("blur", e => {
+document.addEventListener("keydown", (e) => F.handleKey(e, C.DOWN))
+document.addEventListener("keyup", (e) => F.handleKey(e, C.UP))
+document.addEventListener("blur", (e) => {
     game.keysHeld.length = 0
     game.keysDown.length = 0
     game.keysUp.length = 0
 })
 
-
 // SPRITES/RENDERING
 F.renderSprite = function (sheet, name, x, y, size, rotation) {
     const s = game.sheets[sheet]
     if (s == null) {
-        throw new RangeError(sheet == null ? "Sheet not specified" : "Sheet not found: " + sheet)
+        throw new RangeError(
+            sheet == null ? "Sheet not specified" : "Sheet not found: " + sheet,
+        )
     }
     const index = s.ids.indexOf(name)
     if (index === -1) {
-        throw new RangeError(name == null ? "Name not specified" : "Name not found in sheet " + sheet + ": " + name)
+        throw new RangeError(
+            name == null
+                ? "Name not specified"
+                : "Name not found in sheet " + sheet + ": " + name,
+        )
     }
     ctx.save()
     var scale = size || 1
     ctx.translate(Math.floor(x), Math.floor(y))
     ctx.scale(scale, scale)
     if (rotation !== 0) ctx.rotate(rotation)
-    const sw = s.spriteW, sh = s.spriteH
+    const sw = s.spriteW,
+        sh = s.spriteH
     const cols = s.imageW / sw
     const sx = Math.floor((index % cols) * sw)
     const sy = Math.floor(Math.floor(index / cols) * sh)
@@ -86,11 +91,11 @@ document.addEventListener("DOMContentLoaded", function () {
         sheet.img.onload = function () {
             if (++sheetsLoaded === totalSheets) {
                 // START
-                F.update()
+                // F.update()
                 F.render()
             }
         }
-        sheet.img.onerror = e => {
+        sheet.img.onerror = (e) => {
             console.warn(e)
         }
         sheet.img.src = sheet.src
@@ -104,8 +109,8 @@ F.drawText = function (text, y, size = 24) {
     ctx.fillText(text, 10, y)
 }
 
-
 // MISC
 F.addClickEvent = function (id, func) {
     document.getElementById(id).addEventListener("click", func)
 }
+

@@ -62,7 +62,7 @@ const player = {
     x: 0,
     y: 0,
     xVelocity: 0,
-    yVelocity: 0
+    yVelocity: 0,
 }
 
 const camera = {
@@ -179,7 +179,7 @@ const game = {
                     y: 9,
                     click: function () {
                         alert(1)
-                    }
+                    },
                 },
             ],
             addFunc: function (obj) {
@@ -279,14 +279,20 @@ F.itemInteraction = function (item) {
             !F.heldKey("a") &&
             !F.heldKey("A")
         ) {
-            player.xVelocity = Math.min(data.maxSpeed, player.xVelocity + data.speedChange)
+            player.xVelocity = Math.min(
+                data.maxSpeed,
+                player.xVelocity + data.speedChange,
+            )
         } else if (
             (F.heldKey("ArrowLeft") || F.heldKey("a") || F.heldKey("A")) &&
             !F.heldKey("ArrowRight") &&
             !F.heldKey("d") &&
             !F.heldKey("D")
         ) {
-            player.xVelocity = Math.max(-data.maxSpeed, player.xVelocity - data.speedChange)
+            player.xVelocity = Math.max(
+                -data.maxSpeed,
+                player.xVelocity - data.speedChange,
+            )
         } else {
             // Apply friction when no keys pressed
             player.xVelocity *= data.frictionLevel
@@ -302,7 +308,7 @@ F.itemInteraction = function (item) {
                 item.type !== "b" &&
                 item.type !== "takencoin" &&
                 item.type !== "?" &&
-                item.type !== "!"
+                item.type !== "!",
         )
 
         player.y += player.yVelocity
@@ -310,26 +316,32 @@ F.itemInteraction = function (item) {
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
             if (item.type === "v") {
-                if (checkAABBCollision(
-                    player.x + 0.15,
-                    player.y + 0.2,
-                    0.7,
-                    0.8,
-                    item.x + 0.25,
-                    item.y,
-                    0.5,
-                    0.4)) {
+                if (
+                    checkAABBCollision(
+                        player.x + 0.15,
+                        player.y + 0.2,
+                        0.7,
+                        0.8,
+                        item.x + 0.25,
+                        item.y,
+                        0.5,
+                        0.4,
+                    )
+                ) {
                     F.die()
                 }
-                if (checkAABBCollision(
-                    player.x + 0.15,
-                    player.y + 0.2,
-                    0.7,
-                    0.8,
-                    item.x + 0.25,
-                    -9999999999999,
-                    0.5,
-                    999999999999999)) {
+                if (
+                    checkAABBCollision(
+                        player.x + 0.15,
+                        player.y + 0.2,
+                        0.7,
+                        0.8,
+                        item.x + 0.25,
+                        -9999999999999,
+                        0.5,
+                        999999999999999,
+                    )
+                ) {
                     item.falling = 0.05
                 }
                 if (item.falling) {
@@ -338,15 +350,19 @@ F.itemInteraction = function (item) {
                 }
                 continue
             }
-            if (item.type === "B" && checkAABBCollision(
-                player.x + 0.15,
-                player.y + 0.2,
-                0.7,
-                0.8,
-                item.x + 0.25,
-                item.y + 0.9,
-                0.5,
-                0.1)) {
+            if (
+                item.type === "B" &&
+                checkAABBCollision(
+                    player.x + 0.15,
+                    player.y + 0.2,
+                    0.7,
+                    0.8,
+                    item.x + 0.25,
+                    item.y + 0.9,
+                    0.5,
+                    0.1,
+                )
+            ) {
                 player.yVelocity = -0.05
                 if (item.click) {
                     item.click()
@@ -671,8 +687,8 @@ F.render = function () {
             "heart",
             120,
             30 +
-            Math.sin((time + 500) / (150 - data.lives * 10)) *
-            (10 - data.lives),
+                Math.sin((time + 500) / (150 - data.lives * 10)) *
+                    (10 - data.lives),
             5,
         )
     if (data.lives > 2)
@@ -712,7 +728,7 @@ F.update = function () {
         canvas.style.display = "none"
         document.getElementById("menu").removeAttribute("style")
         document.getElementById("about").style.display = "none"
-        document.getElementById("settings").style.display = "none"
+        return
     } else {
         // logic
         var lvl = activeLevel
@@ -748,6 +764,7 @@ F.update = function () {
         F.addClickEvent("playButton", () => {
             document.getElementById("menu").style.display = "none"
             canvas.removeAttribute("style")
+            F.update()
             if (game.hasBeenStarted) return
             game.hasBeenStarted = true
             document.getElementById("menuThemeIntro").pause()
