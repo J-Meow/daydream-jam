@@ -193,7 +193,8 @@ canvas {
     text-align: center;
 }
 
-#full {
+#full,
+#full2 {
     position: absolute;
     display: none;
     top: 0;

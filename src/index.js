@@ -3,7 +3,7 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = true // Shift must be held as well
+var enableDebug = false // Shift must be held as well
 var currentLevel = 0
 var died = false,
     dieFinal = false,
@@ -928,15 +928,16 @@ F.render = function () {
  * Updates and handles logic
  */
 F.update = function () {
-    debug = enableDebug && F.heldKey("Shift")
+    debug = F.heldKey("Shift")
     camera.xCenter = camera.xCenter + (player.x - camera.xCenter) * 0.2
     camera.yCenter = camera.yCenter + (player.y - camera.yCenter) * 0.2
-    if (F.heldKey("Escape")) {
-        canvas.style.display = "none"
-        document.getElementById("menu").removeAttribute("style")
-        document.getElementById("about").style.display = "none"
-        return
-    } else if (!died) {
+    // if (F.heldKey("Escape")) {
+    //     canvas.style.display = "none"
+    //     document.getElementById("menu").removeAttribute("style")
+    //     document.getElementById("about").style.display = "none"
+    //     return
+    // } else
+    if (!died) {
         // logic
         var lvl = activeLevel
         var items = lvl.data
