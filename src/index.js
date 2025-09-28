@@ -178,7 +178,7 @@ const game = {
                     x: 10,
                     y: 9,
                     click: function () {
-                        alert(1)
+                        console.log("button pressed")
                     },
                 },
             ],
