@@ -3,7 +3,7 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = true // Shift must be held as well
+var enableDebug = false // Shift must be held as well
 
 /**
  * @typedef {object} Player
