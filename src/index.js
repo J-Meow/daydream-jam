@@ -750,8 +750,8 @@ F.render = function () {
             "heart",
             120,
             30 +
-            Math.sin((time + 500) / (30 + data.lives * 15)) *
-            (10 - data.lives),
+                Math.sin((time + 500) / (30 + data.lives * 15)) *
+                    (10 - data.lives),
             5,
         )
     if (data.lives > 2)
