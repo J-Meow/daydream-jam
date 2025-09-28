@@ -150,3 +150,43 @@ canvas {
     color: white;
     font-family: "press-start-regular", sans-serif;
 }
+
+#splash {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    z-index: 999;
+}
+
+#splash.animating {
+    animation: splash 3s linear;
+    pointer-events: none;
+}
+
+@keyframes splash {
+    from {
+        filter: brightness(1);
+        opacity: 1;
+    }
+    20% {
+        filter: brightness(0);
+        opacity: 1;
+    }
+    to {
+        filter: brightness(0);
+        opacity: 0;
+    }
+}
+
+#splash .text {
+    position: fixed;
+    left: 50vw;
+    bottom: 20vh;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    padding: 0 5vw;
+    text-align: center;
+}

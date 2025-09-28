@@ -459,15 +459,15 @@ F.render = function () {
                 split[0],
                 split[1],
                 (item.x + item.dx * timeDiff * 0.06) * 16,
-                (item.y + item.dy * timeDiff * 0.06) * 16
+                (item.y + item.dy * timeDiff * 0.06) * 16,
             )
         }
     }
     F.renderSprite(
         "main",
         "player",
-        (player.x + (0) * timeDiff) * 16,
-        (player.y + (0) * timeDiff) * 16
+        (player.x + 0 * timeDiff) * 16,
+        (player.y + 0 * timeDiff) * 16,
     )
     ctx.restore()
     requestAnimationFrame(F.render)
@@ -534,6 +534,23 @@ F.update = function () {
             document.getElementById("menu").removeAttribute("style")
             document.getElementById("settings").style.display = "none"
         })
+        let splashAnimationPlayed = false
+        if (enableDebug) {
+            splashAnimationPlayed = true
+            document.getElementById("splash").style.display = "none"
+        }
+        function startSplashAnimation() {
+            if (splashAnimationPlayed) return
+            splashAnimationPlayed = true
+            document.getElementById("splash").classList.add("animating")
+            setTimeout(() => {
+                document.getElementById("splash").style.display = "none"
+            }, 3000)
+        }
+        F.addClickEvent("splash", () => {
+            startSplashAnimation()
+        })
+        addEventListener("keydown", startSplashAnimation)
         if (enableDebug) {
             document.getElementById("playButton").click()
         }
