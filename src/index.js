@@ -237,8 +237,8 @@ const game = {
                                        0       vvvv
                                        0   
                                        0          f
-                                       0^^^^^^^^^^^
-                                       [___________`,
+                                       0^^^^^^^^^^^^^^^^
+                                       [_______________]`,
         },
         {
             name: "Main Level",
@@ -431,10 +431,10 @@ F.itemInteraction = function (item) {
                         999999999999999,
                     )
                 ) {
-                    item.falling = Math.max(0.05, item.falling)
+                    item.falling = Math.max(0.05, item.falling || 0)
                 }
                 if (item.falling) {
-                    item.y += Math.max(item.falling - 0.4, 0) // stall
+                    item.y += Math.max(item.falling - 0.5, 0) // stall
                     item.falling = (item.falling + 0.06) * 0.95
                 }
                 continue
