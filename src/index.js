@@ -176,13 +176,13 @@ const game = {
             },
             map: `
      P              
-    ! ?             {^}
+                    {^}
 {^^^^^^}        {^^^^^^^}
 [______]        [_______]                  ^
                                            0
                                            0
                                            0
-                                           0
+                  S                        0
         {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0
         [______________________________0   0
                                        0   0
@@ -325,6 +325,7 @@ F.itemInteraction = function (item) {
             ) {
                 if (item.type === "S") {
                     if (player.yVelocity > 0) {
+                        document.getElementById("regularJumpPadSFX")
                         player.y = item.y - 1
                         player.yVelocity = -0.35
                     }
@@ -613,6 +614,7 @@ F.update = function () {
             }
         }
         if (player.y > 30) {
+            document.getElementById("deathSFX").play()
             F.loadLevel(0)
         }
     }
