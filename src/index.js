@@ -3,7 +3,7 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = true // Shift must be held as well
+var enableDebug = false // Shift must be held as well
 
 /**
  * @typedef {object} Player
@@ -75,12 +75,13 @@ var F = {}
 const game = {
     w: 1920,
     h: 1080,
+    hasBeenStarted: false,
     keysHeld: [],
     keysDown: [],
     keysUp: [],
     data: {
         player: player,
-        lives: 3
+        lives: 3,
     },
     canvas: canvas,
     ctx: ctx,
@@ -126,7 +127,7 @@ const game = {
                 "wallBottom",
                 "verticalBottom",
                 "spike",
-                "heart"
+                "heart",
             ],
         },
     },
@@ -290,7 +291,7 @@ F.itemInteraction = function (item) {
                 item.type !== "b" &&
                 item.type !== "takencoin" &&
                 item.type !== "?" &&
-                item.type !== "!"
+                item.type !== "!",
         )
 
         player.y += player.yVelocity
@@ -298,27 +299,33 @@ F.itemInteraction = function (item) {
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
             if (item.type === "v") {
-                if (checkAABBCollision(
-                    player.x,
-                    player.y,
-                    1,
-                    1,
-                    item.x + 0.25,
-                    item.y,
-                    0.5,
-                    0.3)) {
+                if (
+                    checkAABBCollision(
+                        player.x,
+                        player.y,
+                        1,
+                        1,
+                        item.x + 0.25,
+                        item.y,
+                        0.5,
+                        0.3,
+                    )
+                ) {
                     data.lives--
                     F.loadLevel(0)
                 }
-                if (checkAABBCollision(
-                    player.x,
-                    player.y,
-                    1,
-                    1,
-                    item.x + 0.25,
-                    -9999999999999,
-                    0.5,
-                    999999999999999)) {
+                if (
+                    checkAABBCollision(
+                        player.x,
+                        player.y,
+                        1,
+                        1,
+                        item.x + 0.25,
+                        -9999999999999,
+                        0.5,
+                        999999999999999,
+                    )
+                ) {
                     item.falling = 0.05
                 }
                 if (item.falling) {
@@ -327,15 +334,19 @@ F.itemInteraction = function (item) {
                 }
                 continue
             }
-            if (item.type === "B" && checkAABBCollision(
-                player.x,
-                player.y,
-                1,
-                1,
-                item.x + 0.25,
-                item.y + 0.9,
-                0.5,
-                0.1)) {
+            if (
+                item.type === "B" &&
+                checkAABBCollision(
+                    player.x,
+                    player.y,
+                    1,
+                    1,
+                    item.x + 0.25,
+                    item.y + 0.9,
+                    0.5,
+                    0.1,
+                )
+            ) {
                 player.yVelocity = -0.05
                 item.type = "b"
             }
@@ -623,9 +634,24 @@ F.render = function () {
     )
     ctx.restore()
     F.drawText("X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3), 30)
-    if (data.lives > 0) F.renderSprite("tiles", "heart", 30, 30 + Math.sin(time / 150) * 5, 5)
-    if (data.lives > 1) F.renderSprite("tiles", "heart", 120, 30 + Math.sin((time + 500) / 200) * 5, 5)
-    if (data.lives > 2) F.renderSprite("tiles", "heart", 210, 30 + Math.sin((time + 1000) / 300) * 5, 5)
+    if (data.lives > 0)
+        F.renderSprite("tiles", "heart", 30, 30 + Math.sin(time / 150) * 5, 5)
+    if (data.lives > 1)
+        F.renderSprite(
+            "tiles",
+            "heart",
+            120,
+            30 + Math.sin((time + 500) / 200) * 5,
+            5,
+        )
+    if (data.lives > 2)
+        F.renderSprite(
+            "tiles",
+            "heart",
+            210,
+            30 + Math.sin((time + 1000) / 300) * 5,
+            5,
+        )
     requestAnimationFrame(F.render)
 }
 /**
@@ -667,7 +693,7 @@ F.update = function () {
 
 // Add events to buttons
 !(function () {
-    let clickSFX = document.getElementById("clickSFX");
+    let clickSFX = document.getElementById("clickSFX")
     Array.from(document.getElementsByTagName("button")).forEach((button) => {
         button.onclick = () => clickSFX.play()
     })
@@ -676,6 +702,8 @@ F.update = function () {
         F.addClickEvent("playButton", () => {
             document.getElementById("menu").style.display = "none"
             canvas.removeAttribute("style")
+            if (game.hasBeenStarted) return
+            game.hasBeenStarted = true
             document.getElementById("menuThemeIntro").pause()
             document.getElementById("menuThemeLoop").pause()
             document.getElementById("aboveGroundLoop").play()
@@ -732,3 +760,4 @@ F.update = function () {
         e.preventDefault()
     })
 })()
+
