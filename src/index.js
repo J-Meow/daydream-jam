@@ -3,7 +3,7 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = false // Shift must be held as well
+var enableDebug = true // Shift must be held as well
 
 /**
  * @typedef {object} Player
@@ -11,8 +11,10 @@ var enableDebug = false // Shift must be held as well
  * @property {number} y Y-coordinate of player.
  * @property {number} dx Delta difference between frames
  * @property {number} dx Y-coordinate of player.
- * @property {number} oldX Old x-coordinate of player.
- * @property {number} oldY Old y-coordinate of player.
+ * @property {number} px Old x-coordinate of player.
+ * @property {number} px Old y-coordinate of player.
+ * @property {number} xVelocity X-velocity.
+ * @property {number} yVelocity Y-velocity.
  * @property {number} speed Speed when moving left or right.
  * @property {number} jumpHeight Height of jump.
  */
@@ -60,7 +62,7 @@ const player = {
     x: 0,
     y: 0,
     xVelocity: 0,
-    yVelocity: 0,
+    yVelocity: 0
 }
 
 const camera = {
@@ -171,11 +173,14 @@ const game = {
                 v: "tiles/spike",
             },
             items: [
-                // {
-                //     type: "B",
-                //     x: 10,
-                //     y: 8,
-                // },
+                {
+                    type: "B",
+                    x: 10,
+                    y: 9,
+                    click: function () {
+                        alert(1)
+                    }
+                },
             ],
             addFunc: function (obj) {
                 // obj.
@@ -255,12 +260,13 @@ F.addDataToLevel = function (lvl) {
 }
 game.levelData.forEach(F.addDataToLevel) // Add data to each level
 
-/**
- * Determines interaction with an Item.
- * @param {Item} item Item to interact with.
- */
+F.die = function () {
+    document.getElementById("deathSFX").play()
+    data.lives--
+    F.loadLevel(0)
+}
+
 F.itemInteraction = function (item) {
-    var touchingPlayer = F.touchingPlayer(item)
     if (item.type === "P") {
         // Save old position
         player.px = player.x
@@ -273,20 +279,14 @@ F.itemInteraction = function (item) {
             !F.heldKey("a") &&
             !F.heldKey("A")
         ) {
-            player.xVelocity = Math.min(
-                data.maxSpeed,
-                player.xVelocity + data.speedChange,
-            )
+            player.xVelocity = Math.min(data.maxSpeed, player.xVelocity + data.speedChange)
         } else if (
             (F.heldKey("ArrowLeft") || F.heldKey("a") || F.heldKey("A")) &&
             !F.heldKey("ArrowRight") &&
             !F.heldKey("d") &&
             !F.heldKey("D")
         ) {
-            player.xVelocity = Math.max(
-                -data.maxSpeed,
-                player.xVelocity - data.speedChange,
-            )
+            player.xVelocity = Math.max(-data.maxSpeed, player.xVelocity - data.speedChange)
         } else {
             // Apply friction when no keys pressed
             player.xVelocity *= data.frictionLevel
@@ -302,7 +302,7 @@ F.itemInteraction = function (item) {
                 item.type !== "b" &&
                 item.type !== "takencoin" &&
                 item.type !== "?" &&
-                item.type !== "!",
+                item.type !== "!"
         )
 
         player.y += player.yVelocity
@@ -310,33 +310,26 @@ F.itemInteraction = function (item) {
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
             if (item.type === "v") {
-                if (
-                    checkAABBCollision(
-                        player.x,
-                        player.y,
-                        1,
-                        1,
-                        item.x + 0.25,
-                        item.y,
-                        0.5,
-                        0.3,
-                    )
-                ) {
-                    data.lives--
-                    F.loadLevel(0)
+                if (checkAABBCollision(
+                    player.x + 0.15,
+                    player.y + 0.2,
+                    0.7,
+                    0.8,
+                    item.x + 0.25,
+                    item.y,
+                    0.5,
+                    0.4)) {
+                    F.die()
                 }
-                if (
-                    checkAABBCollision(
-                        player.x,
-                        player.y,
-                        1,
-                        1,
-                        item.x + 0.25,
-                        -9999999999999,
-                        0.5,
-                        999999999999999,
-                    )
-                ) {
+                if (checkAABBCollision(
+                    player.x + 0.15,
+                    player.y + 0.2,
+                    0.7,
+                    0.8,
+                    item.x + 0.25,
+                    -9999999999999,
+                    0.5,
+                    999999999999999)) {
                     item.falling = 0.05
                 }
                 if (item.falling) {
@@ -345,29 +338,28 @@ F.itemInteraction = function (item) {
                 }
                 continue
             }
-            if (
-                item.type === "B" &&
-                checkAABBCollision(
-                    player.x,
-                    player.y,
-                    1,
-                    1,
-                    item.x + 0.25,
-                    item.y + 0.9,
-                    0.5,
-                    0.1,
-                )
-            ) {
+            if (item.type === "B" && checkAABBCollision(
+                player.x + 0.15,
+                player.y + 0.2,
+                0.7,
+                0.8,
+                item.x + 0.25,
+                item.y + 0.9,
+                0.5,
+                0.1)) {
                 player.yVelocity = -0.05
+                if (item.click) {
+                    item.click()
+                }
                 item.type = "b"
             }
             if (
                 item.type.toLowerCase() !== "b" &&
                 checkAABBCollision(
-                    player.x,
-                    player.y,
-                    1,
-                    1,
+                    player.x + 0.15,
+                    player.y + 0.2,
+                    0.7,
+                    0.8,
                     item.x,
                     item.y,
                     1,
@@ -595,11 +587,13 @@ F.loadLevel = function (id) {
             gravity: 0.015,
         })
     }
+    player.xVelocity = 0
+    player.yVelocity = 0
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
         if (item.type === "P") {
-            player.x = item.x
-            player.y = item.y
+            player.px = player.x = item.x
+            player.py = player.y = item.y
             camera.xCenter = player.x
             camera.yCenter = player.y
         }
@@ -677,8 +671,8 @@ F.render = function () {
             "heart",
             120,
             30 +
-                Math.sin((time + 500) / (150 - data.lives * 10)) *
-                    (10 - data.lives),
+            Math.sin((time + 500) / (150 - data.lives * 10)) *
+            (10 - data.lives),
             5,
         )
     if (data.lives > 2)
@@ -733,9 +727,8 @@ F.update = function () {
                 item.dy = item.y - item.py
             }
         }
-        if (player.y > 30) {
-            document.getElementById("deathSFX").play()
-            F.loadLevel(0)
+        if (player.y > 40) {
+            F.die()
         }
     }
     lastTime = Date.now()

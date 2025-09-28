@@ -109,13 +109,3 @@ F.drawText = function (text, y, size = 24) {
 F.addClickEvent = function (id, func) {
     document.getElementById(id).addEventListener("click", func)
 }
-
-
-// SPRITE INTERACTIONS
-
-/**
- * @param {Item} sprite
- */
-F.touchingPlayer = function (sprite) {
-    return Math.abs(sprite.x - player.x) < 1.000000001 && Math.abs(sprite.y - player.y) < 1.000000001
-}
