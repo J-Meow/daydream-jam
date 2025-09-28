@@ -200,7 +200,7 @@ const game = {
                                        0   0
                                        0   0
                                        0   [_______
-                                       0   
+                                       0       vv
                                        0   
                                        0   
                                        0^^^^^^^^^^^
@@ -378,8 +378,9 @@ F.itemInteraction = function (item) {
             var item = checkedItems[i]
             if (
                 item.type.toLowerCase() !== "b" &&
-                item.type.toLowerCase() !== "coin" &&
+                item.type.toLowerCase() !== "$" &&
                 item.type.toLowerCase() !== "takencoin" &&
+                item.type.toLowerCase() !== "v" &&
                 checkAABBCollision(
                     player.x,
                     player.y,
@@ -588,7 +589,8 @@ F.render = function () {
         Math.floor(-camera.xCenter * 16 * cameraScale + game.w / 2),
         Math.floor(-camera.yCenter * 16 * cameraScale + game.h / 2),
     )
-    var timeDiff = Date.now() - lastTime
+    var time = Date.now()
+    var timeDiff = time - lastTime
     ctx.scale(cameraScale, cameraScale)
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
@@ -614,9 +616,9 @@ F.render = function () {
     )
     ctx.restore()
     F.drawText("X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3), 30)
-    if (data.lives > 0) F.renderSprite("tiles", "heart", 30, 30, 5)
-    if (data.lives > 1) F.renderSprite("tiles", "heart", 120, 30, 5)
-    if (data.lives > 2) F.renderSprite("tiles", "heart", 210, 30, 5)
+    if (data.lives > 0) F.renderSprite("tiles", "heart", 30, 30 + Math.sin(time / 150) * 5, 5)
+    if (data.lives > 1) F.renderSprite("tiles", "heart", 120, 30 + Math.sin((time + 500) / 200) * 5, 5)
+    if (data.lives > 2) F.renderSprite("tiles", "heart", 210, 30 + Math.sin((time + 1000) / 300) * 5, 5)
     requestAnimationFrame(F.render)
 }
 /**
