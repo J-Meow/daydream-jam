@@ -71,17 +71,17 @@ canvas {
     top: 50vh;
     transform: translate(-50%, -300%);
 }
-
+/* 
 #settingsButton {
     left: 50vw;
     top: 50vh;
     transform: translate(-50%, -100%);
-}
+} */
 
 #aboutButton {
     left: 50vw;
     top: 50vh;
-    transform: translate(-50%, 100%);
+    transform: translate(-50%, -100%);
 }
 
 #aboutBackButton {
@@ -90,7 +90,7 @@ canvas {
     transform: translate(-50%, 0);
 }
 
-#settingsBackButton {
+/* #settingsBackButton {
     left: 50vw;
     bottom: 2vh;
     transform: translate(-50%, 0);
@@ -118,7 +118,7 @@ canvas {
     left: 50vw;
     bottom: 2vh;
     transform: translate(400%, 2000%);
-}
+} */
 
 .title {
     transform: translate(-50%, -1000%);
