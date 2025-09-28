@@ -326,7 +326,6 @@ F.itemInteraction = function (item) {
             }
         }
 
-        console.log(game.keysHeld)
         if (
             isOnGround &&
             (F.heldKey("ArrowUp") ||
@@ -339,10 +338,6 @@ F.itemInteraction = function (item) {
 
         player.dx = player.x - player.px
         player.dy = player.y - player.py
-
-        if (player.y > 30) {
-            F.loadLevel(0)
-        }
     } else if (debug) {
         if (touchingPlayer) {
             ctx.strokeStyle = "orange"
@@ -485,7 +480,7 @@ function checkAABBCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
 var activeLevel = null
 F.loadLevel = function (id) {
     activeLevel = game.levelData[id]
-    var items = activeLevel.items
+    var items = activeLevel.data
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
         if (item.type === "P") {
@@ -563,6 +558,9 @@ F.update = function () {
                 item.dx = item.x - item.px
                 item.dy = item.y - item.py
             }
+        }
+        if (player.y > 30) {
+            F.loadLevel(0)
         }
     }
     lastTime = Date.now()
