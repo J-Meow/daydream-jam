@@ -131,36 +131,42 @@ const game = {
         {
             name: "Main Level",
             keys: {
-                "P": "main/player",
+                P: "main/player",
                 "!": "main/!",
                 "?": "main/?",
                 "{": "tiles/topLeft3x3",
                 "^": "tiles/topMiddle3x3",
                 "}": "tiles/topRight3x3",
-                "S": "tiles/purpleS", // Purple spring
-                "s": "tiles/blueS", // Blue spring
+                S: "tiles/purpleS", // Purple spring
+                s: "tiles/blueS", // Blue spring
                 "(": "tiles/middleLeft3x3",
-                "0": "tiles/middleMiddle3x3",
+                0: "tiles/middleMiddle3x3",
                 ")": "tiles/middleRight3x3",
-                "f": "tiles/flag",
-                "$": "tiles/coin",
+                f: "tiles/flag",
+                $: "tiles/coin",
                 "{": "tiles/bottomLeft3x3",
-                "0": "tiles/bottomMiddle3x3",
+                0: "tiles/bottomMiddle3x3",
                 "}": "tiles/bottomRight3x3",
-                "1": "tiles/wallTop",
-                "u": "tiles/verticalTop",
-                "B": "tiles/button",
-                "b": "tiles/buttonPressed",
+                1: "tiles/wallTop",
+                u: "tiles/verticalTop",
+                B: "tiles/button",
+                b: "tiles/buttonPressed",
                 "*": "tiles/small1x1",
-                "2": "tiles/wallMiddle",
-                "m": "tiles/verticalMiddle",
+                2: "tiles/wallMiddle",
+                m: "tiles/verticalMiddle",
                 ",": "tiles/left1x3",
                 ".": "tiles/middle1x3",
                 "/": "tiles/right1x3",
-                "3": "tiles/wallBottom",
-                "t": "tiles/verticalBottom",
+                3: "tiles/wallBottom",
+                t: "tiles/verticalBottom",
             },
-            items: [],
+            items: [
+                {
+                    type: "B",
+                    x: 10,
+                    y: 8,
+                },
+            ],
             addFunc: function (obj) {
                 // obj.
                 return obj
@@ -173,7 +179,7 @@ const game = {
                                            _
          $                                 _
                                            _
-          S                                _
+                                           _
         {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   _
         [______________________________]   _
                                        _   _
@@ -273,7 +279,12 @@ F.itemInteraction = function (item) {
 
         var items = activeLevel.data
         var checkedItems = items.filter(
-            (item) => item.type !== "P" && item.type !== "$" && item.type !== "?" && item.type !== "!",
+            (item) =>
+                item.type !== "P" &&
+                item.type !== "b" &&
+                item.type !== "takencoin" &&
+                item.type !== "?" &&
+                item.type !== "!",
         )
 
         player.y += player.yVelocity
@@ -281,6 +292,23 @@ F.itemInteraction = function (item) {
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
             if (
+                item.type === "B" &&
+                checkAABBCollision(
+                    player.x,
+                    player.y,
+                    1,
+                    1,
+                    item.x + 0.25,
+                    item.y,
+                    0.5,
+                    0.2,
+                )
+            ) {
+                player.yVelocity = -0.1
+                item.type = "b"
+            }
+            if (
+                item.type.toLowerCase() !== "b" &&
                 checkAABBCollision(
                     player.x,
                     player.y,
@@ -297,6 +325,8 @@ F.itemInteraction = function (item) {
                         player.y = item.y - 1
                         player.yVelocity = -0.35
                     }
+                } else if (item.type === "$") {
+                    item.type = "takencoin"
                 } else {
                     if (player.yVelocity > 0) {
                         player.y = item.y - 1
@@ -314,6 +344,9 @@ F.itemInteraction = function (item) {
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
             if (
+                item.type.toLowerCase() !== "b" &&
+                item.type.toLowerCase() !== "coin" &&
+                item.type.toLowerCase() !== "takencoin" &&
                 checkAABBCollision(
                     player.x,
                     player.y,
@@ -323,7 +356,8 @@ F.itemInteraction = function (item) {
                     item.y,
                     1,
                     1,
-                )
+                ) &&
+                item.type != "buttonPressed"
             ) {
                 if (player.xVelocity > 0) {
                     // Moving right
@@ -531,6 +565,9 @@ F.render = function () {
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
         var type = item.type
+        if (type == "takencoin") {
+            continue
+        }
         var split = lvl.keys[type].split("/")
         if (type !== "P") {
             F.renderSprite(
