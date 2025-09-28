@@ -60,7 +60,7 @@ const player = {
     x: 0,
     y: 0,
     xVelocity: 0,
-    yVelocity: 0
+    yVelocity: 0,
 }
 
 const camera = {
@@ -347,10 +347,20 @@ F.render = function () {
         var type = item.type
         var split = lvl.keys[type].split("/")
         if (type !== "P") {
-            F.renderSprite(split[0], split[1], (item.x + item.dx * timeDiff * 0.06) * 16, (item.y + item.dy * timeDiff * 0.06) * 16)
+            F.renderSprite(
+                split[0],
+                split[1],
+                (item.x + item.dx * timeDiff * 0.06) * 16,
+                (item.y + item.dy * timeDiff * 0.06) * 16,
+            )
         }
     }
-    F.renderSprite("main", "player", (player.x + player.dx / 60 * timeDiff) * 16, (player.y + player.dy / 60 * timeDiff) * 16)
+    F.renderSprite(
+        "main",
+        "player",
+        (player.x + (player.dx / 60) * timeDiff) * 16,
+        (player.y + (player.dy / 60) * timeDiff) * 16,
+    )
     ctx.restore()
     requestAnimationFrame(F.render)
 }
