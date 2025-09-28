@@ -178,8 +178,16 @@ const game = {
                     x: 10,
                     y: 9,
                     click: function () {
-                        console.log("button pressed")
+                        activeLevel.data.filter(
+                            (x) => x.x == 2 && x.y == 2,
+                        )[0].type = "B"
                     },
+                },
+                {
+                    type: "b",
+                    x: 2,
+                    y: 2,
+                    click: function () {},
                 },
             ],
             addFunc: function (obj) {
@@ -379,10 +387,7 @@ F.itemInteraction = function (item) {
                 1,
                 1,
             )
-            if (
-                item.type.toLowerCase() !== "b" &&
-                collision
-            ) {
+            if (item.type.toLowerCase() !== "b" && collision) {
                 if (item.type === "S") {
                     if (player.yVelocity > 0) {
                         document.getElementById("regularJumpPadSFX")
@@ -688,8 +693,8 @@ F.render = function () {
             "heart",
             120,
             30 +
-            Math.sin((time + 500) / (30 + data.lives * 15)) *
-            (10 - data.lives),
+                Math.sin((time + 500) / (30 + data.lives * 15)) *
+                    (10 - data.lives),
             5,
         )
     if (data.lives > 2)
