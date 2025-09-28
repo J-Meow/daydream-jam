@@ -85,7 +85,7 @@ const game = {
         frictionLevel: 0.9,
         speedChange: 0.03,
         maxSpeed: 0.15,
-        gravity: 0.01
+        gravity: 0.01,
     },
     canvas: canvas,
     ctx: ctx,
@@ -181,11 +181,11 @@ const game = {
                 // obj.
                 return obj
             },
-            map: `
-     P              
-                    {^}
-{^^^^^^}        {^^^^^^^}
-[______]        [_______]                  ^
+            map: `                    {^}
+     P              000
+                    000
+{^^^^^^}            000^}
+[______]            [___]                  ^
                     vv                     0
                                            0
                                            0
@@ -273,14 +273,20 @@ F.itemInteraction = function (item) {
             !F.heldKey("a") &&
             !F.heldKey("A")
         ) {
-            player.xVelocity = Math.min(data.maxSpeed, player.xVelocity + data.speedChange)
+            player.xVelocity = Math.min(
+                data.maxSpeed,
+                player.xVelocity + data.speedChange,
+            )
         } else if (
             (F.heldKey("ArrowLeft") || F.heldKey("a") || F.heldKey("A")) &&
             !F.heldKey("ArrowRight") &&
             !F.heldKey("d") &&
             !F.heldKey("D")
         ) {
-            player.xVelocity = Math.max(-data.maxSpeed, player.xVelocity - data.speedChange)
+            player.xVelocity = Math.max(
+                -data.maxSpeed,
+                player.xVelocity - data.speedChange,
+            )
         } else {
             // Apply friction when no keys pressed
             player.xVelocity *= data.frictionLevel
@@ -578,7 +584,7 @@ F.loadLevel = function (id) {
             frictionLevel: 0.95,
             speedChange: 0.04,
             maxSpeed: 0.15,
-            gravity: 0.01
+            gravity: 0.01,
         })
     } else {
         // player 1
@@ -586,7 +592,7 @@ F.loadLevel = function (id) {
             frictionLevel: 0.98,
             speedChange: 0.03,
             maxSpeed: 0.3,
-            gravity: 0.015
+            gravity: 0.015,
         })
     }
     for (let i = 0; i < items.length; i++) {
@@ -651,17 +657,54 @@ F.render = function () {
     }
     F.renderSprite(
         "main",
-        "player" + ((data.lives & 1) ? 2 : 1),
+        "player" + (data.lives & 1 ? 2 : 1),
         (player.x + 0 * timeDiff) * 16,
         (player.y + 0 * timeDiff) * 16,
     )
     ctx.restore()
     F.drawText("X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3), 30)
-    if (data.lives > 0) F.renderSprite("tiles", "heart", 30, 30 + Math.sin(time / (120 - data.lives * 10)) * (12 - data.lives), 5)
-    if (data.lives > 1) F.renderSprite("tiles", "heart", 120, 30 + Math.sin((time + 500) / (150 - data.lives * 10)) * (10 - data.lives), 5)
-    if (data.lives > 2) F.renderSprite("tiles", "heart", 210, 30 + Math.sin((time + 1000) / (300 - data.lives * 25)) * 6, 5)
-    if (data.lives > 3) F.renderSprite("tiles", "heart", 300, 30 + Math.sin((time + 1500) / 425) * 5, 5)
-    if (data.lives > 4) F.renderSprite("tiles", "heart", 390, 30 + Math.sin((time + 3200) / 650) * 4, 5)
+    if (data.lives > 0)
+        F.renderSprite(
+            "tiles",
+            "heart",
+            30,
+            30 + Math.sin(time / (120 - data.lives * 10)) * (12 - data.lives),
+            5,
+        )
+    if (data.lives > 1)
+        F.renderSprite(
+            "tiles",
+            "heart",
+            120,
+            30 +
+                Math.sin((time + 500) / (150 - data.lives * 10)) *
+                    (10 - data.lives),
+            5,
+        )
+    if (data.lives > 2)
+        F.renderSprite(
+            "tiles",
+            "heart",
+            210,
+            30 + Math.sin((time + 1000) / (300 - data.lives * 25)) * 6,
+            5,
+        )
+    if (data.lives > 3)
+        F.renderSprite(
+            "tiles",
+            "heart",
+            300,
+            30 + Math.sin((time + 1500) / 425) * 5,
+            5,
+        )
+    if (data.lives > 4)
+        F.renderSprite(
+            "tiles",
+            "heart",
+            390,
+            30 + Math.sin((time + 3200) / 650) * 4,
+            5,
+        )
     requestAnimationFrame(F.render)
 }
 /**
@@ -770,4 +813,3 @@ F.update = function () {
         e.preventDefault()
     })
 })()
-
