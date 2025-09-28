@@ -3,7 +3,7 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = true // Shift must be held as well
+var enableDebug = false // Shift must be held as well
 var currentLevel = 0
 
 /**
@@ -211,7 +211,7 @@ const game = {
             },
             map: `                    {^}
      P              000
-      f             000
+                    000
 {^^^^^^}            000^}
 [______]            [___]                  ^
                                            0
@@ -431,7 +431,7 @@ F.itemInteraction = function (item) {
                         999999999999999,
                     )
                 ) {
-                    item.falling = 0.05
+                    item.falling = Math.max(0.05, item.falling)
                 }
                 if (item.falling) {
                     item.y += Math.max(item.falling - 0.4, 0) // stall
