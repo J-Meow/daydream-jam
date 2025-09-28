@@ -131,10 +131,10 @@ const game = {
         {
             name: "Main Level",
             keys: {
-                                "P": "main/player",
-                                "!": "main/!",
-                                "?": "main/?",
-                                "{": "tiles/topLeft3x3",
+                "P": "main/player",
+                "!": "main/!",
+                "?": "main/?",
+                "{": "tiles/topLeft3x3",
                 "^": "tiles/topMiddle3x3",
                 "}": "tiles/topRight3x3",
                 "S": "tiles/purpleS", // Purple spring
@@ -167,7 +167,7 @@ const game = {
             },
             map: `
      P              
-  $ $ $             {^}
+  $ ! ?             {^}
 {^^^^^^}        {^^^^^^^}
 [______]        [_______]                  _
                                            _
@@ -273,7 +273,7 @@ F.itemInteraction = function (item) {
 
         var items = activeLevel.data
         var checkedItems = items.filter(
-            (item) => item.type !== "P" && item.type !== "$",
+            (item) => item.type !== "P" && item.type !== "$" && item.type !== "?" && item.type !== "!",
         )
 
         player.y += player.yVelocity
