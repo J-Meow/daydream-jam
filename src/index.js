@@ -766,14 +766,18 @@ F.update = function () {
             document.getElementById("menu").removeAttribute("style")
             document.getElementById("about").style.display = "none"
         })
-        F.addClickEvent("settingsButton", () => {
-            document.getElementById("menu").style.display = "none"
-            document.getElementById("settings").removeAttribute("style")
-        })
-        F.addClickEvent("settingsBackButton", () => {
-            document.getElementById("menu").removeAttribute("style")
-            document.getElementById("settings").style.display = "none"
-        })
+        // F.addClickEvent("settingsButton", () => {
+        //     document.getElementById("menu").style.display = "none"
+        //     document.getElementById("settings").removeAttribute("style")
+        // })
+        // F.addClickEvent("settingsBackButton", () => {
+        //     document.getElementById("menu").removeAttribute("style")
+        //     document.getElementById("settings").style.display = "none"
+        // })
+        // F.addClickEvent("settingsBackButton", () => {
+        //     document.getElementById("menu").removeAttribute("style")
+        //     document.getElementById("settings").style.display = "none"
+        // })
         let splashAnimationPlayed = false
         if (enableDebug) {
             splashAnimationPlayed = true
