@@ -83,7 +83,8 @@ const game = {
         lives: 5,
         frictionLevel: 0.9,
         speedChange: 0.03,
-        maxSpeed: 0.15
+        maxSpeed: 0.15,
+        gravity: 0.01
     },
     canvas: canvas,
     ctx: ctx,
@@ -285,7 +286,7 @@ F.itemInteraction = function (item) {
         }
 
         // Apply gravity
-        player.yVelocity += 0.01
+        player.yVelocity += data.gravity
 
         var items = activeLevel.data
         var checkedItems = items.filter(
@@ -560,6 +561,23 @@ F.loadLevel = function (id) {
     activeLevel = game.levelData[id]
     // F.addDataToLevel(activeLevel)
     var items = activeLevel.data
+    if (data.lives & 1) {
+        // player 2
+        data = Object.assign(data, {
+            frictionLevel: 0.95,
+            speedChange: 0.04,
+            maxSpeed: 0.15,
+            gravity: 0.01
+        })
+    } else {
+        // player 1
+        data = Object.assign(data, {
+            frictionLevel: 0.98,
+            speedChange: 0.03,
+            maxSpeed: 0.3,
+            gravity: 0.015
+        })
+    }
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
         if (item.type === "P") {
