@@ -43,7 +43,7 @@ var enableDebug = true // Shift must be held as well
  * @property {string[]} keysHeld Array holding keys held
  * @property {string[]} keysDown Array holding keys just pressed (cleared after each update)
  * @property {string[]} keysUp Array holding keys just released (cleared after each update)
- * @property {{player: Player, lives: number}} data Object containing data that needs to be saved.
+ * @property {{player: Player}} data Object containing data that needs to be saved.
  * @property {number} x The x-coordinate of the sprite.
  * @property {number} y The y-coordinate of the sprite.
  * @property {HTMLCanvasElement} canvas Game canvas.
@@ -80,7 +80,10 @@ const game = {
     keysUp: [],
     data: {
         player: player,
-        lives: 5
+        lives: 5,
+        frictionLevel: 0.9,
+        speedChange: 0.03,
+        maxSpeed: 0.15
     },
     canvas: canvas,
     ctx: ctx,
@@ -268,17 +271,17 @@ F.itemInteraction = function (item) {
             !F.heldKey("a") &&
             !F.heldKey("A")
         ) {
-            player.xVelocity = Math.min(0.15, player.xVelocity + 0.03)
+            player.xVelocity = Math.min(data.maxSpeed, player.xVelocity + data.speedChange)
         } else if (
             (F.heldKey("ArrowLeft") || F.heldKey("a") || F.heldKey("A")) &&
             !F.heldKey("ArrowRight") &&
             !F.heldKey("d") &&
             !F.heldKey("D")
         ) {
-            player.xVelocity = Math.max(-0.15, player.xVelocity - 0.03)
+            player.xVelocity = Math.max(-data.maxSpeed, player.xVelocity - data.speedChange)
         } else {
             // Apply friction when no keys pressed
-            player.xVelocity *= 0.6
+            player.xVelocity *= data.frictionLevel
         }
 
         // Apply gravity
@@ -555,7 +558,7 @@ function checkAABBCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
 var activeLevel = null
 F.loadLevel = function (id) {
     activeLevel = game.levelData[id]
-    F.addDataToLevel(activeLevel)
+    // F.addDataToLevel(activeLevel)
     var items = activeLevel.data
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
@@ -619,7 +622,7 @@ F.render = function () {
     }
     F.renderSprite(
         "main",
-        "player" + ((game.lives & 1) + 1),
+        "player" + ((data.lives & 1) ? 2 : 1),
         (player.x + 0 * timeDiff) * 16,
         (player.y + 0 * timeDiff) * 16,
     )
