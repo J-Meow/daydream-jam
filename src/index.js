@@ -143,7 +143,7 @@ const game = {
     },
     levelData: [
         {
-            name: "Main Level",
+            name: "Second Level",
             keys: {
                 P: "main/player1",
                 p: "main/player2",
@@ -180,7 +180,7 @@ const game = {
                 {
                     type: "B",
                     x: 10,
-                    y: 9,
+                    y: 12,
                     click: function () {
                         activeLevel.data.filter(
                             (x) => x.x == 2 && x.y == 2,
@@ -192,6 +192,36 @@ const game = {
                     x: 2,
                     y: 2,
                     click: function () {
+                        activeLevel.data.filter(
+                            (x) => x.x == 26 && x.y == 12,
+                        )[0].type = "B"
+                    },
+                },
+                {
+                    type: "b",
+                    x: 26,
+                    y: 12,
+                    click: function () {
+                        activeLevel.data.filter(
+                            (x) => x.x == 23 && x.y == 6,
+                        )[0].type = "B"
+                    },
+                },
+                {
+                    type: "b",
+                    x: 23,
+                    y: 6,
+                    click: function () {
+                        activeLevel.data.filter(
+                            (x) => x.x == 30 && x.y == 10,
+                        )[0].type = "B"
+                    },
+                },
+                {
+                    type: "b",
+                    x: 30,
+                    y: 10,
+                    click: function () {
                         activeLevel.data.forEach((item) => {
                             if (item.internalID === 1) {
                                 item.falling = 0.05
@@ -201,9 +231,9 @@ const game = {
                 },
                 {
                     type: "2",
-                    x: 22,
-                    y: 5,
-                    height: 5,
+                    x: 39,
+                    y: 9,
+                    height: 2,
                     maxFall: 12,
                     internalID: 1,
                 },
@@ -212,88 +242,21 @@ const game = {
                 // obj.
                 return obj
             },
-            map: `                    {^}
-     P              000
-                    000
-{^^^^^^}            000^}
-[______]            [___]                  ^
-                                           0
-                                           0
-                                           0
-                                           0
-                                           0
-        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0
-        [______________________________0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0    {^}
-                                       0   0    000
-                                       0   [_______
-                                       0       vvvv
-                                       0   
-                                       0          f
-                                       0^^^^^^^^^^^^^^^^
-                                       [_______________]`,
-        },
-        {
-            name: "Second Level",
-            keys: {
-                P: "main/player1",
-                p: "main/player2",
-                "!": "main/!",
-                "?": "main/?",
-                "{": "tiles/topLeft3x3",
-                "^": "tiles/topMiddle3x3",
-                "}": "tiles/topRight3x3",
-                S: "tiles/purpleS", // Purple spring
-                s: "tiles/blueS", // Blue spring
-                "(": "tiles/middleLeft3x3",
-                0: "tiles/middleMiddle3x3",
-                ")": "tiles/middleRight3x3",
-                f: "tiles/flag",
-                $: "tiles/coin",
-                "[": "tiles/bottomLeft3x3",
-                _: "tiles/bottomMiddle3x3",
-                "]": "tiles/bottomRight3x3",
-                1: "tiles/wallTop",
-                u: "tiles/verticalTop",
-                B: "tiles/button",
-                b: "tiles/buttonPressed",
-                "*": "tiles/small1x1",
-                2: "tiles/wallMiddle",
-                m: "tiles/verticalMiddle",
-                ",": "tiles/left1x3",
-                ".": "tiles/middle1x3",
-                "/": "tiles/right1x3",
-                3: "tiles/wallBottom",
-                t: "tiles/verticalBottom",
-                v: "tiles/spike",
-            },
-            items: [],
-            addFunc: function (obj) {
-                // obj.
-                return obj
-            },
             map: `                    
      P              
                     
-{^^^^^^}            
-[______]                                   ^
-                                           0
-                                           0
-                                           0
-                                           0
-                                           0
-        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0
-        [______________________________0   0
+{^^^^^^}                                   ^
+[______]                                   0
+                        {}                 0
+                        00                 0
+                     {^^00             {^^^0
+                     00000             [___0
+                  {^^00000                 0
+                  00000000                 0
+               {^^00000000   {^^^^}  {^}   0
+               00000000000   000000  000   0
+        {^^^^^^00000000000^^^000000  000   0
+        [_________________________]  [_0   0
                                        0   0
                                        0   0
                                        0   0
@@ -433,7 +396,6 @@ F.itemInteraction = function (item) {
                 )
             ) {
                 if (currentLevel >= game.levelData.length - 1) {
-
                 }
                 currentLevel++
                 F.loadLevel(currentLevel)
@@ -503,25 +465,25 @@ F.itemInteraction = function (item) {
             var collision =
                 item.type == "2"
                     ? checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x + 0.1,
-                        item.y,
-                        0.8,
-                        item.height || 2,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x + 0.1,
+                          item.y,
+                          0.8,
+                          item.height || 2,
+                      )
                     : checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x,
-                        item.y,
-                        1,
-                        1,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x,
+                          item.y,
+                          1,
+                          1,
+                      )
             if (item.type == "2") console.log(collision)
             if (item.type.toLowerCase() !== "b" && collision) {
                 if (item.type === "S") {
@@ -551,25 +513,25 @@ F.itemInteraction = function (item) {
             var collision =
                 item.type == "2"
                     ? checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x + 0.1,
-                        item.y,
-                        0.8,
-                        item.height || 2,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x + 0.1,
+                          item.y,
+                          0.8,
+                          item.height || 2,
+                      )
                     : checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x,
-                        item.y,
-                        1,
-                        1,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x,
+                          item.y,
+                          1,
+                          1,
+                      )
             if (
                 item.type.toLowerCase() !== "b" &&
                 item.type.toLowerCase() !== "$" &&
@@ -786,11 +748,19 @@ F.render = function () {
         died = time <= dieResetTime
         var diff = dieResetTime - time
         if (dieFinal) {
-            canvas.style.transform = "translate(" + (Math.random() * 3 - innerWidth / 2) + "px," + (Math.random() * 3 - innerHeight / 2) + "px) scale(" + (Math.random() * 0.02 + 0.99) + ")"
+            canvas.style.transform =
+                "translate(" +
+                (Math.random() * 3 - innerWidth / 2) +
+                "px," +
+                (Math.random() * 3 - innerHeight / 2) +
+                "px) scale(" +
+                (Math.random() * 0.02 + 0.99) +
+                ")"
             console.log(canvas.style.transform)
         }
         document.getElementById("full").style.display = "block"
-        document.getElementById("full").style.backgroundColor = ("rgba(0,0,0," + (1 - Math.abs((750 - diff) / 750)) + ")")
+        document.getElementById("full").style.backgroundColor =
+            "rgba(0,0,0," + (1 - Math.abs((750 - diff) / 750)) + ")"
         return
     } else {
         canvas.removeAttribute("style")
@@ -807,7 +777,7 @@ F.render = function () {
     ctx.globalAlpha =
         (secondLevel ? 0 : 1) +
         ((secondLevel ? 1 : -1) * (Math.min(24, Math.max(player.y, 12)) - 12)) /
-        12
+            12
     ctx.fillRect(0, 0, game.w, game.h)
     ctx.globalAlpha = 1
     document.getElementById("aboveGroundLoop").volume = secondLevel
@@ -895,8 +865,8 @@ F.render = function () {
             "heart",
             120,
             30 +
-            Math.sin((time + 500) / (30 + data.lives * 15)) *
-            (10 - data.lives),
+                Math.sin((time + 500) / (30 + data.lives * 15)) *
+                    (10 - data.lives),
             5,
         )
     if (data.lives > 2)
@@ -975,6 +945,7 @@ F.update = function () {
             F.update()
             if (game.hasBeenStarted) return
             game.hasBeenStarted = true
+            F.render()
             document.getElementById("menuThemeIntro").pause()
             document.getElementById("menuThemeLoop").pause()
             document.getElementById("aboveGroundLoop").play()
