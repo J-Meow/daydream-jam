@@ -161,7 +161,7 @@ const game = {
 
          $
 
-          B
+          S
         {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^`,
         },
     ],
@@ -236,18 +236,21 @@ F.itemInteraction = function (item) {
         var isOnGround = false;
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i];
-            if (item.type === "B" || item.type === "b") {
-                if (checkAABBCollision(player.x, player.y, 1, 1, item.x + 0.3, item.y + 0.8, 0.4, 0.2)) {
-                    item.type = "b"
-                }
-            } else if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
-                if (player.yVelocity > 0) { // Moving down
-                    player.y = item.y - 1; // Place on top of the block
-                    player.yVelocity = 0;
-                    isOnGround = true;
-                } else if (player.yVelocity < 0) { // Moving up
-                    player.y = item.y + 1; // Place below the block
-                    player.yVelocity = 0;
+            if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
+                if (item.type === "S") {
+                    if (player.yVelocity > 0) {
+                        player.y = item.y - 1;
+                        player.yVelocity = -0.35;
+                    }
+                } else {
+                    if (player.yVelocity > 0) {
+                        player.y = item.y - 1;
+                        player.yVelocity = 0;
+                        isOnGround = true;
+                    } else if (player.yVelocity < 0) {
+                        player.y = item.y + 1;
+                        player.yVelocity = 0;
+                    }
                 }
             }
         }
