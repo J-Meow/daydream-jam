@@ -242,7 +242,7 @@ const game = {
                                        [_______________]`,
         },
         {
-            name: "Main Level",
+            name: "Second Level",
             keys: {
                 P: "main/player1",
                 p: "main/player2",
@@ -275,8 +275,7 @@ const game = {
                 t: "tiles/verticalBottom",
                 v: "tiles/spike",
             },
-            items: [
-            ],
+            items: [],
             addFunc: function (obj) {
                 // obj.
                 return obj
@@ -286,12 +285,31 @@ const game = {
                     000
 {^^^^^^}            000^}
 [______]            [___]                  ^
-                    vv                     0
                                            0
                                            0
                                            0
                                            0
-        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0`,
+                                           0
+        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0
+        [______________________________0   0
+                                       0   0
+                                       0   0
+                                       0   0
+                                       0   0
+                                       0   0
+                                       0   0
+                                       0   0
+                                       0   0
+                                       0   0
+                                       0   0
+                                       0   0    {^}
+                                       0   0    000
+                                       0   [_______
+                                       0       vvvv
+                                       0   
+                                       0          f
+                                       0^^^^^^^^^^^^^^^^
+                                       [_______________]`,
         },
     ],
     consts: {
@@ -396,16 +414,19 @@ F.itemInteraction = function (item) {
         var isOnGround = false
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
-            if (item.type === "f" && checkAABBCollision(
-                player.x,
-                player.y,
-                1,
-                1,
-                item.x,
-                item.y,
-                1,
-                1,
-            )) {
+            if (
+                item.type === "f" &&
+                checkAABBCollision(
+                    player.x,
+                    player.y,
+                    1,
+                    1,
+                    item.x,
+                    item.y,
+                    1,
+                    1,
+                )
+            ) {
                 currentLevel++
                 F.loadLevel(currentLevel)
                 return
@@ -474,25 +495,25 @@ F.itemInteraction = function (item) {
             var collision =
                 item.type == "2"
                     ? checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x + 0.1,
-                        item.y,
-                        0.8,
-                        item.height || 2,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x + 0.1,
+                          item.y,
+                          0.8,
+                          item.height || 2,
+                      )
                     : checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x,
-                        item.y,
-                        1,
-                        1,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x,
+                          item.y,
+                          1,
+                          1,
+                      )
             if (item.type == "2") console.log(collision)
             if (item.type.toLowerCase() !== "b" && collision) {
                 if (item.type === "S") {
@@ -522,25 +543,25 @@ F.itemInteraction = function (item) {
             var collision =
                 item.type == "2"
                     ? checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x + 0.1,
-                        item.y,
-                        0.8,
-                        item.height || 2,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x + 0.1,
+                          item.y,
+                          0.8,
+                          item.height || 2,
+                      )
                     : checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x,
-                        item.y,
-                        1,
-                        1,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x,
+                          item.y,
+                          1,
+                          1,
+                      )
             if (
                 item.type.toLowerCase() !== "b" &&
                 item.type.toLowerCase() !== "$" &&
@@ -769,19 +790,27 @@ F.render = function () {
         return
     }
     ctx.clearRect(0, 0, game.w, game.h)
-    if (player.y < 24) {
-        ctx.fillStyle = "#ccf"
-        ctx.globalAlpha = 1 - (Math.min(24, Math.max(player.y, 12)) - 12) / 12
-        ctx.fillRect(0, 0, game.w, game.h)
-        ctx.globalAlpha = 1
-        document.getElementById("aboveGroundLoop").volume =
-            1 - (Math.min(24, Math.max(player.y, 12)) - 12) / 12
-        document.getElementById("caveLoop").volume =
-            (Math.min(24, Math.max(player.y, 12)) - 12) / 12
+    const secondLevel = activeLevel.name == "Second Level"
+    if (secondLevel) {
+        ctx.fillStyle = "#300"
     } else {
-        document.getElementById("aboveGroundLoop").volume = 0
-        document.getElementById("caveLoop").volume = 1
+        ctx.fillStyle = "#ccf"
     }
+    ctx.globalAlpha =
+        (secondLevel ? 0 : 1) +
+        ((secondLevel ? 1 : -1) * (Math.min(24, Math.max(player.y, 12)) - 12)) /
+            12
+    ctx.fillRect(0, 0, game.w, game.h)
+    ctx.globalAlpha = 1
+    document.getElementById("aboveGroundLoop").volume = secondLevel
+        ? 0
+        : 1 - (Math.min(24, Math.max(player.y, 12)) - 12) / 12
+    document.getElementById("caveLoop").volume = secondLevel
+        ? 1 - (Math.min(24, Math.max(player.y, 12)) - 12) / 12
+        : (Math.min(24, Math.max(player.y, 12)) - 12) / 12
+    document.getElementById("intenseLoop").volume = secondLevel
+        ? (Math.min(24, Math.max(player.y, 12)) - 12) / 12
+        : 0
     var lvl = activeLevel
     var items = lvl.data
     ctx.save()
@@ -858,8 +887,8 @@ F.render = function () {
             "heart",
             120,
             30 +
-            Math.sin((time + 500) / (30 + data.lives * 15)) *
-            (10 - data.lives),
+                Math.sin((time + 500) / (30 + data.lives * 15)) *
+                    (10 - data.lives),
             5,
         )
     if (data.lives > 2)
