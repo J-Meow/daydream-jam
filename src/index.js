@@ -232,11 +232,16 @@ F.itemInteraction = function (item) {
                 if (game.keysDown.includes("ArrowUp")) {
                     player.yVelocity = -0.2
                 }
-            } else if (collision === COLLISION_LEFT || collision === COLLISION_RIGHT) {
+            }
+        }
+        for (let i = 0; i < items.length; i++) {
+            var collision = checkAABBCollision(player.x, player.y - 0.0000001, 1, 1, item.x, item.y, 1, 1)
+            if (collision === COLLISION_LEFT || collision === COLLISION_RIGHT) {
                 player.xVelocity = 0
                 player.x = Math.round(player.x)
             }
         }
+
         player.x += player.xVelocity
         player.y += player.yVelocity
         player.dx = player.xVelocity
@@ -337,10 +342,6 @@ F.render = function () {
         Math.floor(-camera.yCenter * 16 * cameraScale + game.h / 2),
     )
     var timeDiff = Date.now() - lastTime
-    for (let t = 0; t < timeDiff; t++) {
-        camera.xCenter = camera.xCenter + (player.x - camera.xCenter) * 0.01
-        camera.yCenter = camera.yCenter + (player.y - camera.yCenter) * 0.01
-    }
     ctx.scale(cameraScale, cameraScale)
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
@@ -351,15 +352,15 @@ F.render = function () {
                 split[0],
                 split[1],
                 (item.x + item.dx * timeDiff * 0.06) * 16,
-                (item.y + item.dy * timeDiff * 0.06) * 16,
+                (item.y + item.dy * timeDiff * 0.06) * 16
             )
         }
     }
     F.renderSprite(
         "main",
         "player",
-        (player.x + (player.dx / 60) * timeDiff) * 16,
-        (player.y + (player.dy / 60) * timeDiff) * 16,
+        (player.x + (0) * timeDiff) * 16,
+        (player.y + (0) * timeDiff) * 16
     )
     ctx.restore()
     requestAnimationFrame(F.render)
@@ -369,6 +370,8 @@ F.render = function () {
  */
 F.update = function () {
     debug = enableDebug && F.heldKey("Shift")
+    camera.xCenter = camera.xCenter + (player.x - camera.xCenter) * 0.2
+    camera.yCenter = camera.yCenter + (player.y - camera.yCenter) * 0.2
     if (F.heldKey("Escape")) {
         canvas.style.display = "none"
         document.getElementById("menu").removeAttribute("style")
