@@ -348,7 +348,6 @@ F.update = function () {
             document.getElementById("menu").removeAttribute("style")
             document.getElementById("settings").style.display = "none"
         })
-
         if (enableDebug) {
             document.getElementById("playButton").click()
         }
