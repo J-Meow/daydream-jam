@@ -178,13 +178,14 @@ const game = {
             },
             map: `
      P              
-    ! ?             {^}
+                    {^}
 {^^^^^^}        {^^^^^^^}
 [______]        [_______]                  ^
                     vv                     0
                                            0
                                            0
-            B                              0
+                                           0
+                                           0
         {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0
         [______________________________0   0
                                        0   0
@@ -354,6 +355,7 @@ F.itemInteraction = function (item) {
             ) {
                 if (item.type === "S") {
                     if (player.yVelocity > 0) {
+                        document.getElementById("regularJumpPadSFX")
                         player.y = item.y - 1
                         player.yVelocity = -0.35
                     }
@@ -581,6 +583,13 @@ F.render = function () {
         ctx.globalAlpha = 1 - (Math.min(24, Math.max(player.y, 12)) - 12) / 12
         ctx.fillRect(0, 0, game.w, game.h)
         ctx.globalAlpha = 1
+        document.getElementById("aboveGroundLoop").volume =
+            1 - (Math.min(24, Math.max(player.y, 12)) - 12) / 12
+        document.getElementById("caveLoop").volume =
+            (Math.min(24, Math.max(player.y, 12)) - 12) / 12
+    } else {
+        document.getElementById("aboveGroundLoop").volume = 0
+        document.getElementById("caveLoop").volume = 1
     }
     var lvl = activeLevel
     var items = lvl.data
@@ -650,6 +659,7 @@ F.update = function () {
             }
         }
         if (player.y > 30) {
+            document.getElementById("deathSFX").play()
             F.loadLevel(0)
         }
     }
@@ -670,6 +680,13 @@ F.update = function () {
         F.addClickEvent("playButton", () => {
             document.getElementById("menu").style.display = "none"
             canvas.removeAttribute("style")
+            document.getElementById("menuThemeIntro").pause()
+            document.getElementById("menuThemeLoop").pause()
+            document.getElementById("aboveGroundLoop").play()
+            document.getElementById("caveLoop").volume = 0
+            document.getElementById("caveLoop").play()
+            document.getElementById("intenseLoop").volume = 0
+            document.getElementById("intenseLoop").play()
         })
         F.addClickEvent("aboutButton", () => {
             document.getElementById("menu").style.display = "none"
