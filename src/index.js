@@ -213,69 +213,111 @@ F.itemInteraction = function (item) {
     var touchingPlayer = F.touchingPlayer(item)
     if (item.type === "P") {
         // Save old position
-        player.px = player.x;
-        player.py = player.y;
+        player.px = player.x
+        player.py = player.y
 
         // Apply more consistent horizontal movement
-        if ((F.heldKey("ArrowRight") || F.heldKey("d") || F.heldKey("D")) && !F.heldKey("ArrowLeft") && !F.heldKey("a") && !F.heldKey("A")) {
-            player.xVelocity = Math.min(0.15, player.xVelocity + 0.03);
-        } else if ((F.heldKey("ArrowLeft") || F.heldKey("a") || F.heldKey("A")) && !F.heldKey("ArrowRight") && !F.heldKey("d") && !F.heldKey("D")) {
-            player.xVelocity = Math.max(-0.15, player.xVelocity - 0.03);
+        if (
+            (F.heldKey("ArrowRight") || F.heldKey("d") || F.heldKey("D")) &&
+            !F.heldKey("ArrowLeft") &&
+            !F.heldKey("a") &&
+            !F.heldKey("A")
+        ) {
+            player.xVelocity = Math.min(0.15, player.xVelocity + 0.03)
+        } else if (
+            (F.heldKey("ArrowLeft") || F.heldKey("a") || F.heldKey("A")) &&
+            !F.heldKey("ArrowRight") &&
+            !F.heldKey("d") &&
+            !F.heldKey("D")
+        ) {
+            player.xVelocity = Math.max(-0.15, player.xVelocity - 0.03)
         } else {
             // Apply friction when no keys pressed
-            player.xVelocity *= 0.6;
+            player.xVelocity *= 0.6
         }
 
         // Apply gravity
-        player.yVelocity += 0.01;
+        player.yVelocity += 0.01
 
-        var items = activeLevel.data;
-        var checkedItems = items.filter(item => item.type !== "P" && item.type !== "$");
+        var items = activeLevel.data
+        var checkedItems = items.filter(
+            (item) => item.type !== "P" && item.type !== "$",
+        )
 
-        player.y += player.yVelocity;
-        var isOnGround = false;
+        player.y += player.yVelocity
+        var isOnGround = false
         for (let i = 0; i < checkedItems.length; i++) {
-            var item = checkedItems[i];
-            if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
+            var item = checkedItems[i]
+            if (
+                checkAABBCollision(
+                    player.x,
+                    player.y,
+                    1,
+                    1,
+                    item.x,
+                    item.y,
+                    1,
+                    1,
+                )
+            ) {
                 if (item.type === "S") {
                     if (player.yVelocity > 0) {
-                        player.y = item.y - 1;
-                        player.yVelocity = -0.35;
+                        player.y = item.y - 1
+                        player.yVelocity = -0.35
                     }
                 } else {
                     if (player.yVelocity > 0) {
-                        player.y = item.y - 1;
-                        player.yVelocity = 0;
-                        isOnGround = true;
+                        player.y = item.y - 1
+                        player.yVelocity = 0
+                        isOnGround = true
                     } else if (player.yVelocity < 0) {
-                        player.y = item.y + 1;
-                        player.yVelocity = 0;
+                        player.y = item.y + 1
+                        player.yVelocity = 0
                     }
                 }
             }
         }
 
-        player.x += player.xVelocity;
+        player.x += player.xVelocity
         for (let i = 0; i < checkedItems.length; i++) {
-            var item = checkedItems[i];
-            if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
-                if (player.xVelocity > 0) { // Moving right
-                    player.x = item.x - 1;
-                    player.xVelocity = 0;
-                } else if (player.xVelocity < 0) { // Moving left
-                    player.x = item.x + 1;
-                    player.xVelocity = 0;
+            var item = checkedItems[i]
+            if (
+                checkAABBCollision(
+                    player.x,
+                    player.y,
+                    1,
+                    1,
+                    item.x,
+                    item.y,
+                    1,
+                    1,
+                )
+            ) {
+                if (player.xVelocity > 0) {
+                    // Moving right
+                    player.x = item.x - 1
+                    player.xVelocity = 0
+                } else if (player.xVelocity < 0) {
+                    // Moving left
+                    player.x = item.x + 1
+                    player.xVelocity = 0
                 }
             }
         }
 
         console.log(game.keysHeld)
-        if (isOnGround && (F.heldKey("ArrowUp") || F.heldKey("w") || F.heldKey("W") || F.heldKey(" "))) {
-            player.yVelocity = -0.3; // jump
+        if (
+            isOnGround &&
+            (F.heldKey("ArrowUp") ||
+                F.heldKey("w") ||
+                F.heldKey("W") ||
+                F.heldKey(" "))
+        ) {
+            player.yVelocity = -0.3 // jump
         }
 
-        player.dx = player.x - player.px;
-        player.dy = player.y - player.py;
+        player.dx = player.x - player.px
+        player.dy = player.y - player.py
 
         if (player.y > 30) {
             F.loadLevel(0)
@@ -315,90 +357,90 @@ function sweptAABB(x, y, w, h, vx, vy, sx, sy, sw, sh) {
     if (vx === 0 && vy === 0) {
         // We don't consider initial overlap as collision
         // This allows the player to move when starting in an overlapping state
-        return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+        return { hit: false, time: 1, normal: { x: 0, y: 0 } }
     }
 
     // Expand the static rect by the moving rect's dimensions
-    const expandedX = sx - w;
-    const expandedY = sy - h;
-    const expandedW = sw + w;
-    const expandedH = sh + h;
+    const expandedX = sx - w
+    const expandedY = sy - h
+    const expandedW = sw + w
+    const expandedH = sh + h
 
     // Ray-AABB intersection
-    let tNear = -Infinity;
-    let tFar = Infinity;
-    let normal = { x: 0, y: 0 };
+    let tNear = -Infinity
+    let tFar = Infinity
+    let normal = { x: 0, y: 0 }
 
     // X-axis
     if (vx === 0) {
         if (x < expandedX || x > expandedX + expandedW) {
-            return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+            return { hit: false, time: 1, normal: { x: 0, y: 0 } }
         }
     } else {
-        const t1 = (expandedX - x) / vx;
-        const t2 = (expandedX + expandedW - x) / vx;
-        const tMin = Math.min(t1, t2);
-        const tMax = Math.max(t1, t2);
+        const t1 = (expandedX - x) / vx
+        const t2 = (expandedX + expandedW - x) / vx
+        const tMin = Math.min(t1, t2)
+        const tMax = Math.max(t1, t2)
 
         if (tMin > tNear) {
-            tNear = tMin;
-            normal = { x: vx > 0 ? -1 : 1, y: 0 };
+            tNear = tMin
+            normal = { x: vx > 0 ? -1 : 1, y: 0 }
         }
-        tFar = Math.min(tFar, tMax);
+        tFar = Math.min(tFar, tMax)
     }
 
     // Y-axis
     if (vy === 0) {
         if (y < expandedY || y > expandedY + expandedH) {
-            return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+            return { hit: false, time: 1, normal: { x: 0, y: 0 } }
         }
     } else {
-        const t1 = (expandedY - y) / vy;
-        const t2 = (expandedY + expandedH - y) / vy;
-        const tMin = Math.min(t1, t2);
-        const tMax = Math.max(t1, t2);
+        const t1 = (expandedY - y) / vy
+        const t2 = (expandedY + expandedH - y) / vy
+        const tMin = Math.min(t1, t2)
+        const tMax = Math.max(t1, t2)
 
         if (tMin > tNear) {
-            tNear = tMin;
-            normal = { x: 0, y: vy > 0 ? -1 : 1 };
+            tNear = tMin
+            normal = { x: 0, y: vy > 0 ? -1 : 1 }
         }
-        tFar = Math.min(tFar, tMax);
+        tFar = Math.min(tFar, tMax)
     }
 
     // Check if intersection exists
     if (tNear > tFar || tFar < 0 || tNear > 1) {
-        return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+        return { hit: false, time: 1, normal: { x: 0, y: 0 } }
     }
 
     // Improved collision detection to avoid detecting "just touching" as collisions
-    const epsilon = 0.001; // Larger epsilon to better ignore touching edges
+    const epsilon = 0.001 // Larger epsilon to better ignore touching edges
 
     // If we're already nearly touching (very small time to collision)
     if (tNear <= epsilon) {
         // Get the projected position after movement
-        const projectedX = x + vx;
-        const projectedY = y + vy;
+        const projectedX = x + vx
+        const projectedY = y + vy
 
         // Only consider this a collision if we're actually trying to move INTO the object
         // and not just moving parallel or away from it
-        const dotProduct = normal.x * vx + normal.y * vy;
+        const dotProduct = normal.x * vx + normal.y * vy
 
         if (dotProduct >= 0) {
             // We're not moving toward the object, so ignore this collision
-            return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+            return { hit: false, time: 1, normal: { x: 0, y: 0 } }
         }
 
         // Special case for vertical movement and jumps
         if (Math.abs(normal.y) > 0 && Math.abs(vy) > 0.1) {
             // Allow jumping when just touching the ground
             if (normal.y > 0 && vy < 0) {
-                return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+                return { hit: false, time: 1, normal: { x: 0, y: 0 } }
             }
         }
     }
 
     // Valid collision detected
-    return { hit: true, time: Math.max(0, tNear), normal };
+    return { hit: true, time: Math.max(0, tNear), normal }
 }
 
 /**
@@ -406,16 +448,16 @@ function sweptAABB(x, y, w, h, vx, vy, sx, sy, sw, sh) {
  */
 function checkAABBCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
     if (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2) {
-        const overlapX = Math.min(x1 + w1 - x2, x2 + w2 - x1);
-        const overlapY = Math.min(y1 + h1 - y2, y2 + h2 - y1);
+        const overlapX = Math.min(x1 + w1 - x2, x2 + w2 - x1)
+        const overlapY = Math.min(y1 + h1 - y2, y2 + h2 - y1)
 
         if (overlapX < overlapY) {
-            return x1 + w1 / 2 < x2 + w2 / 2 ? COLLISION_RIGHT : COLLISION_LEFT;
+            return x1 + w1 / 2 < x2 + w2 / 2 ? COLLISION_RIGHT : COLLISION_LEFT
         } else {
-            return y1 + h1 / 2 < y2 + h2 / 2 ? COLLISION_BOTTOM : COLLISION_TOP;
+            return y1 + h1 / 2 < y2 + h2 / 2 ? COLLISION_BOTTOM : COLLISION_TOP
         }
     }
-    return COLLISION_NONE;
+    return COLLISION_NONE
 }
 
 /** @type {Level} */
