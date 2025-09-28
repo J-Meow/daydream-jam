@@ -3,7 +3,7 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = true // Shift must be held as well
+var enableDebug = false // Shift must be held as well
 var currentLevel = 0
 var died = false,
     dieFinal = false,
@@ -282,11 +282,11 @@ const game = {
                 // obj.
                 return obj
             },
-            map: `                    {^}
-     P              000
-                    000
-{^^^^^^}            000^}
-[______]            [___]                  ^
+            map: `                    
+     P              
+                    
+{^^^^^^}            
+[______]                                   ^
                                            0
                                            0
                                            0
