@@ -218,12 +218,12 @@ F.itemInteraction = function (item) {
         
         // Apply more consistent horizontal movement
         if (F.heldKey("ArrowRight") && !F.heldKey("ArrowLeft")) {
-            player.xVelocity = Math.min(0.25, player.xVelocity + 0.05);
+            player.xVelocity = Math.min(0.15, player.xVelocity + 0.03);
         } else if (F.heldKey("ArrowLeft") && !F.heldKey("ArrowRight")) {
-            player.xVelocity = Math.max(-0.25, player.xVelocity - 0.05);
+            player.xVelocity = Math.max(-0.15, player.xVelocity - 0.03);
         } else {
             // Apply friction when no keys pressed
-            player.xVelocity *= 0.7;
+            player.xVelocity *= 0.6;
         }
         
         // Apply gravity
