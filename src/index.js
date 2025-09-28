@@ -4,6 +4,7 @@ const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
 var enableDebug = true // Shift must be held as well
+var currentLevel = 0
 
 /**
  * @typedef {object} Player
@@ -210,7 +211,7 @@ const game = {
             },
             map: `                    {^}
      P              000
-                    000
+      f             000
 {^^^^^^}            000^}
 [______]            [___]                  ^
                     vv                     0
@@ -235,10 +236,61 @@ const game = {
                                        0   [_______
                                        0       vv
                                        0   
-                                       0   
+                                       0          f
                                        0^^^^^^^^^^^
-                                       [___________
-`,
+                                       [___________`,
+        },
+        {
+            name: "Main Level",
+            keys: {
+                P: "main/player1",
+                p: "main/player2",
+                "!": "main/!",
+                "?": "main/?",
+                "{": "tiles/topLeft3x3",
+                "^": "tiles/topMiddle3x3",
+                "}": "tiles/topRight3x3",
+                S: "tiles/purpleS", // Purple spring
+                s: "tiles/blueS", // Blue spring
+                "(": "tiles/middleLeft3x3",
+                0: "tiles/middleMiddle3x3",
+                ")": "tiles/middleRight3x3",
+                f: "tiles/flag",
+                $: "tiles/coin",
+                "[": "tiles/bottomLeft3x3",
+                _: "tiles/bottomMiddle3x3",
+                "]": "tiles/bottomRight3x3",
+                1: "tiles/wallTop",
+                u: "tiles/verticalTop",
+                B: "tiles/button",
+                b: "tiles/buttonPressed",
+                "*": "tiles/small1x1",
+                2: "tiles/wallMiddle",
+                m: "tiles/verticalMiddle",
+                ",": "tiles/left1x3",
+                ".": "tiles/middle1x3",
+                "/": "tiles/right1x3",
+                3: "tiles/wallBottom",
+                t: "tiles/verticalBottom",
+                v: "tiles/spike",
+            },
+            items: [
+            ],
+            addFunc: function (obj) {
+                // obj.
+                return obj
+            },
+            map: `                    {^}
+     P              000
+                    000
+{^^^^^^}            000^}
+[______]            [___]                  ^
+                    vv                     0
+                                           0
+                                           0
+                                           0
+                                           0
+        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0`,
         },
     ],
     consts: {
@@ -285,7 +337,7 @@ game.levelData.forEach(F.addDataToLevel) // Add data to each level
 F.die = function () {
     document.getElementById("deathSFX").play()
     data.lives--
-    F.loadLevel(0)
+    F.loadLevel(currentLevel)
 }
 
 F.itemInteraction = function (item) {
@@ -337,6 +389,21 @@ F.itemInteraction = function (item) {
         var isOnGround = false
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
+            if (item.type === "f" && checkAABBCollision(
+                player.x,
+                player.y,
+                1,
+                1,
+                item.x,
+                item.y,
+                1,
+                1,
+            )) {
+                currentLevel++
+                F.loadLevel(currentLevel)
+                return
+            }
+
             if (item.type === "v") {
                 if (
                     checkAABBCollision(
@@ -367,8 +434,8 @@ F.itemInteraction = function (item) {
                     item.falling = 0.05
                 }
                 if (item.falling) {
-                    item.y += item.falling
-                    item.falling = (item.falling + 0.02) * 0.95
+                    item.y += Math.max(item.falling - 0.4, 0) // stall
+                    item.falling = (item.falling + 0.06) * 0.95
                 }
                 continue
             } else if (item.type === "2") {
@@ -400,31 +467,31 @@ F.itemInteraction = function (item) {
             var collision =
                 item.type == "2"
                     ? checkAABBCollision(
-                          player.x + 0.15,
-                          player.y + 0.2,
-                          0.7,
-                          0.8,
-                          item.x + 0.1,
-                          item.y,
-                          0.8,
-                          item.height || 2,
-                      )
+                        player.x + 0.15,
+                        player.y + 0.2,
+                        0.7,
+                        0.8,
+                        item.x + 0.1,
+                        item.y,
+                        0.8,
+                        item.height || 2,
+                    )
                     : checkAABBCollision(
-                          player.x + 0.15,
-                          player.y + 0.2,
-                          0.7,
-                          0.8,
-                          item.x,
-                          item.y,
-                          1,
-                          1,
-                      )
+                        player.x + 0.15,
+                        player.y + 0.2,
+                        0.7,
+                        0.8,
+                        item.x,
+                        item.y,
+                        1,
+                        1,
+                    )
             if (item.type == "2") console.log(collision)
             if (item.type.toLowerCase() !== "b" && collision) {
                 if (item.type === "S") {
                     if (player.yVelocity > 0) {
-                        document.getElementById("regularJumpPadSFX")
-                        player.y = item.y + 0.999
+                        document.getElementById("regularJumpPadSFX").play()
+                        player.y = item.y + 1.001
                         player.yVelocity = -0.35
                     }
                 } else if (item.type === "$") {
@@ -448,25 +515,25 @@ F.itemInteraction = function (item) {
             var collision =
                 item.type == "2"
                     ? checkAABBCollision(
-                          player.x + 0.15,
-                          player.y + 0.2,
-                          0.7,
-                          0.8,
-                          item.x + 0.1,
-                          item.y,
-                          0.8,
-                          item.height || 2,
-                      )
+                        player.x + 0.15,
+                        player.y + 0.2,
+                        0.7,
+                        0.8,
+                        item.x + 0.1,
+                        item.y,
+                        0.8,
+                        item.height || 2,
+                    )
                     : checkAABBCollision(
-                          player.x + 0.15,
-                          player.y + 0.2,
-                          0.7,
-                          0.8,
-                          item.x,
-                          item.y,
-                          1,
-                          1,
-                      )
+                        player.x + 0.15,
+                        player.y + 0.2,
+                        0.7,
+                        0.8,
+                        item.x,
+                        item.y,
+                        1,
+                        1,
+                    )
             if (
                 item.type.toLowerCase() !== "b" &&
                 item.type.toLowerCase() !== "$" &&
@@ -767,8 +834,8 @@ F.render = function () {
             "heart",
             120,
             30 +
-                Math.sin((time + 500) / (30 + data.lives * 15)) *
-                    (10 - data.lives),
+            Math.sin((time + 500) / (30 + data.lives * 15)) *
+            (10 - data.lives),
             5,
         )
     if (data.lives > 2)
