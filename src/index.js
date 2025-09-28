@@ -3,7 +3,7 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = true // Shift must be held as well
+var enableDebug = false // Shift must be held as well
 var currentLevel = 0
 var died = false,
     dieFinal = false,
@@ -396,7 +396,6 @@ F.itemInteraction = function (item) {
                 )
             ) {
                 if (currentLevel >= game.levelData.length - 1) {
-
                 }
                 currentLevel++
                 F.loadLevel(currentLevel)
@@ -466,25 +465,25 @@ F.itemInteraction = function (item) {
             var collision =
                 item.type == "2"
                     ? checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x + 0.1,
-                        item.y,
-                        0.8,
-                        item.height || 2,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x + 0.1,
+                          item.y,
+                          0.8,
+                          item.height || 2,
+                      )
                     : checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x,
-                        item.y,
-                        1,
-                        1,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x,
+                          item.y,
+                          1,
+                          1,
+                      )
             if (item.type == "2") console.log(collision)
             if (item.type.toLowerCase() !== "b" && collision) {
                 if (item.type === "S") {
@@ -514,25 +513,25 @@ F.itemInteraction = function (item) {
             var collision =
                 item.type == "2"
                     ? checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x + 0.1,
-                        item.y,
-                        0.8,
-                        item.height || 2,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x + 0.1,
+                          item.y,
+                          0.8,
+                          item.height || 2,
+                      )
                     : checkAABBCollision(
-                        player.x + 0.15,
-                        player.y + 0.2,
-                        0.7,
-                        0.8,
-                        item.x,
-                        item.y,
-                        1,
-                        1,
-                    )
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x,
+                          item.y,
+                          1,
+                          1,
+                      )
             if (
                 item.type.toLowerCase() !== "b" &&
                 item.type.toLowerCase() !== "$" &&
@@ -749,11 +748,19 @@ F.render = function () {
         died = time <= dieResetTime
         var diff = dieResetTime - time
         if (dieFinal) {
-            canvas.style.transform = "translate(" + (Math.random() * 3 - innerWidth / 2) + "px," + (Math.random() * 3 - innerHeight / 2) + "px) scale(" + (Math.random() * 0.02 + 0.99) + ")"
+            canvas.style.transform =
+                "translate(" +
+                (Math.random() * 3 - innerWidth / 2) +
+                "px," +
+                (Math.random() * 3 - innerHeight / 2) +
+                "px) scale(" +
+                (Math.random() * 0.02 + 0.99) +
+                ")"
             console.log(canvas.style.transform)
         }
         document.getElementById("full").style.display = "block"
-        document.getElementById("full").style.backgroundColor = ("rgba(0,0,0," + (1 - Math.abs((750 - diff) / 750)) + ")")
+        document.getElementById("full").style.backgroundColor =
+            "rgba(0,0,0," + (1 - Math.abs((750 - diff) / 750)) + ")"
         return
     } else {
         canvas.removeAttribute("style")
@@ -770,7 +777,7 @@ F.render = function () {
     ctx.globalAlpha =
         (secondLevel ? 0 : 1) +
         ((secondLevel ? 1 : -1) * (Math.min(24, Math.max(player.y, 12)) - 12)) /
-        12
+            12
     ctx.fillRect(0, 0, game.w, game.h)
     ctx.globalAlpha = 1
     document.getElementById("aboveGroundLoop").volume = secondLevel
@@ -858,8 +865,8 @@ F.render = function () {
             "heart",
             120,
             30 +
-            Math.sin((time + 500) / (30 + data.lives * 15)) *
-            (10 - data.lives),
+                Math.sin((time + 500) / (30 + data.lives * 15)) *
+                    (10 - data.lives),
             5,
         )
     if (data.lives > 2)
@@ -937,6 +944,7 @@ F.update = function () {
             F.update()
             if (game.hasBeenStarted) return
             game.hasBeenStarted = true
+            F.render()
             document.getElementById("menuThemeIntro").pause()
             document.getElementById("menuThemeLoop").pause()
             document.getElementById("aboveGroundLoop").play()

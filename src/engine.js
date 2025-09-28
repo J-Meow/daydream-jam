@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (++sheetsLoaded === totalSheets) {
                 // START
                 // F.update()
-                F.render()
+                // F.render()
             }
         }
         sheet.img.onerror = (e) => {
