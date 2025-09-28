@@ -339,7 +339,7 @@ F.die = function () {
     document.getElementById("deathSFX").play()
     if (--data.lives <= 0) {
         died = true
-        dieResetTime = Date.now() + dieFinal ? 1500 : 750
+        dieResetTime = Date.now() + (dieFinal ? 1500 : 750)
         game.levelData.forEach(F.addDataToLevel) // Add data to each level, again
         F.loadLevel(0)
     } else {
