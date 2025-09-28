@@ -37,8 +37,7 @@ canvas {
 
 @font-face {
     font-family: "press-start-regular";
-    src: url("../static/assets/font/PressStart2P-Regular.ttf")
-        format("truetype");
+    src: url("../static/assets/font/PressStart2P-Regular.ttf") format("truetype");
 }
 
 .button {
@@ -71,6 +70,7 @@ canvas {
     top: 50vh;
     transform: translate(-50%, -300%);
 }
+
 /* 
 #settingsButton {
     left: 50vw;
@@ -171,10 +171,12 @@ canvas {
         filter: brightness(1);
         opacity: 1;
     }
+
     20% {
         filter: brightness(0);
         opacity: 1;
     }
+
     to {
         filter: brightness(0);
         opacity: 0;
@@ -189,4 +191,17 @@ canvas {
     width: 100vw;
     padding: 0 5vw;
     text-align: center;
+}
+
+#full {
+    position: absolute;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block;
 }
