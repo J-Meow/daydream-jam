@@ -3,7 +3,7 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = false // Shift must be held as well
+var enableDebug = true // Shift must be held as well
 
 /**
  * @typedef {object} Player
@@ -178,8 +178,20 @@ const game = {
                     x: 10,
                     y: 9,
                     click: function () {
-                        console.log("button pressed")
+                        activeLevel.data.forEach(item => {
+                            if (item.internalID === 1) {
+                                item.falling = 0.05
+                            }
+                        })
                     },
+                },
+                {
+                    type: "2",
+                    x: 22,
+                    y: 5,
+                    height: 5,
+                    maxFall: 12,
+                    internalID: 1
                 },
             ],
             addFunc: function (obj) {
@@ -349,8 +361,14 @@ F.itemInteraction = function (item) {
                     item.falling = (item.falling + 0.02) * 0.95
                 }
                 continue
-            }
-            if (
+            } else if (item.type === "2") {
+                if (item.falling) {
+                    item.y += item.falling
+                    item.falling = (item.falling + 0.004) * 0.95
+                    item.y = Math.min(item.y, item.maxFall)
+                }
+                continue
+            } else if (
                 item.type === "B" &&
                 checkAABBCollision(
                     player.x + 0.15,
@@ -369,7 +387,16 @@ F.itemInteraction = function (item) {
                 }
                 item.type = "b"
             }
-            var collision = checkAABBCollision(
+            var collision = (item.type == "2" ? checkAABBCollision(
+                player.x + 0.15,
+                player.y + 0.2,
+                0.7,
+                0.8,
+                item.x + 0.1,
+                item.y,
+                0.8,
+                item.height || 2,
+            ) : checkAABBCollision(
                 player.x + 0.15,
                 player.y + 0.2,
                 0.7,
@@ -378,7 +405,8 @@ F.itemInteraction = function (item) {
                 item.y,
                 1,
                 1,
-            )
+            ))
+            if (item.type == "2") console.log(collision)
             if (
                 item.type.toLowerCase() !== "b" &&
                 collision
@@ -407,21 +435,31 @@ F.itemInteraction = function (item) {
         player.x += player.xVelocity
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
+            var collision = (item.type == "2" ? checkAABBCollision(
+                player.x + 0.15,
+                player.y + 0.2,
+                0.7,
+                0.8,
+                item.x + 0.1,
+                item.y,
+                0.8,
+                item.height || 2,
+            ) : checkAABBCollision(
+                player.x + 0.15,
+                player.y + 0.2,
+                0.7,
+                0.8,
+                item.x,
+                item.y,
+                1,
+                1,
+            ))
             if (
                 item.type.toLowerCase() !== "b" &&
                 item.type.toLowerCase() !== "$" &&
                 item.type.toLowerCase() !== "takencoin" &&
                 item.type.toLowerCase() !== "v" &&
-                checkAABBCollision(
-                    player.x + 0.15,
-                    player.y + 0.2,
-                    0.7,
-                    0.8,
-                    item.x,
-                    item.y,
-                    1,
-                    1,
-                ) &&
+                collision &&
                 item.type != "buttonPressed"
             ) {
                 if (player.xVelocity > 0) {
@@ -657,7 +695,31 @@ F.render = function () {
             continue
         }
         var split = lvl.keys[type].split("/")
-        if (type !== "P") {
+        if (type == "2") {
+            var h = item.height
+            if (h) {
+                F.renderSprite(
+                    split[0],
+                    "wallTop",
+                    (item.x + item.dx * timeDiff * 0.06) * 16,
+                    (item.y + item.dy * timeDiff * 0.06) * 16
+                )
+                for (let t = 1; t < h - 1; t++) {
+                    F.renderSprite(
+                        split[0],
+                        "wallMiddle",
+                        (item.x + item.dx * timeDiff * 0.06) * 16,
+                        (item.y + t + item.dy * timeDiff * 0.06) * 16
+                    )
+                }
+                F.renderSprite(
+                    split[0],
+                    "wallBottom",
+                    (item.x + item.dx * timeDiff * 0.06) * 16,
+                    (item.y + h - 1 + item.dy * timeDiff * 0.06) * 16
+                )
+            }
+        } else if (type !== "P") {
             F.renderSprite(
                 split[0],
                 split[1],
@@ -673,7 +735,7 @@ F.render = function () {
         (player.y + 0 * timeDiff) * 16,
     )
     ctx.restore()
-    F.drawText("X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3), 30)
+    if (debug) F.drawText("X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3), 30)
     if (data.lives > 0)
         F.renderSprite(
             "tiles",
