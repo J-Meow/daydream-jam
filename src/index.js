@@ -161,8 +161,8 @@ const game = {
 
          $
 
-          $
-        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}`,
+          B
+        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^`,
         },
     ],
     consts: {
@@ -215,31 +215,32 @@ F.itemInteraction = function (item) {
         // Save old position
         player.px = player.x;
         player.py = player.y;
-        
+
         // Apply more consistent horizontal movement
-        if (F.heldKey("ArrowRight") && !F.heldKey("ArrowLeft")) {
+        if ((F.heldKey("ArrowRight") || F.heldKey("d") || F.heldKey("D")) && !F.heldKey("ArrowLeft") && !F.heldKey("a") && !F.heldKey("A")) {
             player.xVelocity = Math.min(0.15, player.xVelocity + 0.03);
-        } else if (F.heldKey("ArrowLeft") && !F.heldKey("ArrowRight")) {
+        } else if ((F.heldKey("ArrowLeft") || F.heldKey("a") || F.heldKey("A")) && !F.heldKey("ArrowRight") && !F.heldKey("d") && !F.heldKey("D")) {
             player.xVelocity = Math.max(-0.15, player.xVelocity - 0.03);
         } else {
             // Apply friction when no keys pressed
             player.xVelocity *= 0.6;
         }
-        
+
         // Apply gravity
         player.yVelocity += 0.01;
-        
-        // --- New Simplified Physics Engine ---
 
         var items = activeLevel.data;
-        var solidItems = items.filter(item => item.type !== "P" && item.type !== "$");
+        var checkedItems = items.filter(item => item.type !== "P" && item.type !== "$");
 
-        // --- Y-Axis Movement and Collision ---
         player.y += player.yVelocity;
         var isOnGround = false;
-        for (let i = 0; i < solidItems.length; i++) {
-            var item = solidItems[i];
-            if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
+        for (let i = 0; i < checkedItems.length; i++) {
+            var item = checkedItems[i];
+            if (item.type === "B" || item.type === "b") {
+                if (checkAABBCollision(player.x, player.y, 1, 1, item.x + 0.3, item.y + 0.8, 0.4, 0.2)) {
+                    item.type = "b"
+                }
+            } else if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
                 if (player.yVelocity > 0) { // Moving down
                     player.y = item.y - 1; // Place on top of the block
                     player.yVelocity = 0;
@@ -251,10 +252,9 @@ F.itemInteraction = function (item) {
             }
         }
 
-        // --- X-Axis Movement and Collision ---
         player.x += player.xVelocity;
-        for (let i = 0; i < solidItems.length; i++) {
-            var item = solidItems[i];
+        for (let i = 0; i < checkedItems.length; i++) {
+            var item = checkedItems[i];
             if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
                 if (player.xVelocity > 0) { // Moving right
                     player.x = item.x - 1;
@@ -266,11 +266,11 @@ F.itemInteraction = function (item) {
             }
         }
 
-        // --- Jumping ---
-        if (isOnGround && (game.keysDown.includes("ArrowUp") || F.heldKey("ArrowUp"))) {
-            player.yVelocity = -0.3;
+        console.log(game.keysHeld)
+        if (isOnGround && (F.heldKey("ArrowUp") || F.heldKey("w") || F.heldKey("W") || F.heldKey(" "))) {
+            player.yVelocity = -0.3; // jump
         }
-        
+
         player.dx = player.x - player.px;
         player.dy = player.y - player.py;
 
@@ -336,7 +336,7 @@ function sweptAABB(x, y, w, h, vx, vy, sx, sy, sw, sh) {
         const t2 = (expandedX + expandedW - x) / vx;
         const tMin = Math.min(t1, t2);
         const tMax = Math.max(t1, t2);
-        
+
         if (tMin > tNear) {
             tNear = tMin;
             normal = { x: vx > 0 ? -1 : 1, y: 0 };
@@ -354,7 +354,7 @@ function sweptAABB(x, y, w, h, vx, vy, sx, sy, sw, sh) {
         const t2 = (expandedY + expandedH - y) / vy;
         const tMin = Math.min(t1, t2);
         const tMax = Math.max(t1, t2);
-        
+
         if (tMin > tNear) {
             tNear = tMin;
             normal = { x: 0, y: vy > 0 ? -1 : 1 };
@@ -366,25 +366,25 @@ function sweptAABB(x, y, w, h, vx, vy, sx, sy, sw, sh) {
     if (tNear > tFar || tFar < 0 || tNear > 1) {
         return { hit: false, time: 1, normal: { x: 0, y: 0 } };
     }
-    
+
     // Improved collision detection to avoid detecting "just touching" as collisions
     const epsilon = 0.001; // Larger epsilon to better ignore touching edges
-    
+
     // If we're already nearly touching (very small time to collision)
     if (tNear <= epsilon) {
         // Get the projected position after movement
         const projectedX = x + vx;
         const projectedY = y + vy;
-        
+
         // Only consider this a collision if we're actually trying to move INTO the object
         // and not just moving parallel or away from it
         const dotProduct = normal.x * vx + normal.y * vy;
-        
+
         if (dotProduct >= 0) {
             // We're not moving toward the object, so ignore this collision
             return { hit: false, time: 1, normal: { x: 0, y: 0 } };
         }
-        
+
         // Special case for vertical movement and jumps
         if (Math.abs(normal.y) > 0 && Math.abs(vy) > 0.1) {
             // Allow jumping when just touching the ground
@@ -393,7 +393,7 @@ function sweptAABB(x, y, w, h, vx, vy, sx, sy, sw, sh) {
             }
         }
     }
-    
+
     // Valid collision detected
     return { hit: true, time: Math.max(0, tNear), normal };
 }
@@ -405,7 +405,7 @@ function checkAABBCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
     if (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2) {
         const overlapX = Math.min(x1 + w1 - x2, x2 + w2 - x1);
         const overlapY = Math.min(y1 + h1 - y2, y2 + h2 - y1);
-        
+
         if (overlapX < overlapY) {
             return x1 + w1 / 2 < x2 + w2 / 2 ? COLLISION_RIGHT : COLLISION_LEFT;
         } else {
