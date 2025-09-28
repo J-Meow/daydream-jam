@@ -409,6 +409,7 @@ F.itemInteraction = function (item) {
                 F.heldKey("W") ||
                 F.heldKey(" "))
         ) {
+            document.getElementById("jumpSFX").play()
             player.yVelocity = -0.3 // jump
         }
 
@@ -654,10 +655,9 @@ F.update = function () {
 
 // Add events to buttons
 !(function () {
-    let clickSFX = new Audio("static/assets/sfx/click.wav")
-    clickSFX.volume = 0.5
+    let clickSFX = document.getElementById("clickSFX");
     Array.from(document.getElementsByTagName("button")).forEach((button) => {
-        button.onclick = () => clickSFX.cloneNode().play()
+        button.onclick = () => clickSFX.play()
     })
 
     document.addEventListener("DOMContentLoaded", function () {
