@@ -43,7 +43,7 @@ var enableDebug = true // Shift must be held as well
  * @property {string[]} keysHeld Array holding keys held
  * @property {string[]} keysDown Array holding keys just pressed (cleared after each update)
  * @property {string[]} keysUp Array holding keys just released (cleared after each update)
- * @property {{player: Player}} data Object containing data that needs to be saved.
+ * @property {{player: Player, lives: number}} data Object containing data that needs to be saved.
  * @property {number} x The x-coordinate of the sprite.
  * @property {number} y The y-coordinate of the sprite.
  * @property {HTMLCanvasElement} canvas Game canvas.
@@ -80,6 +80,7 @@ const game = {
     keysUp: [],
     data: {
         player: player,
+        lives: 0
     },
     canvas: canvas,
     ctx: ctx,
@@ -97,7 +98,7 @@ const game = {
             spriteW: 16,
             spriteH: 16,
             imageW: 16 * 5,
-            imageH: 16 * 5,
+            imageH: 16 * 6,
             ids: [
                 "topLeft3x3",
                 "topMiddle3x3",
@@ -124,6 +125,8 @@ const game = {
                 "right1x3",
                 "wallBottom",
                 "verticalBottom",
+                "spike",
+                "heart"
             ],
         },
     },
@@ -299,12 +302,12 @@ F.itemInteraction = function (item) {
                     1,
                     1,
                     item.x + 0.25,
-                    item.y,
+                    item.y + 0.9,
                     0.5,
-                    0.2,
+                    0.1,
                 )
             ) {
-                player.yVelocity = -0.1
+                player.yVelocity = -0.05
                 item.type = "b"
             }
             if (
@@ -383,12 +386,6 @@ F.itemInteraction = function (item) {
 
         player.dx = player.x - player.px
         player.dy = player.y - player.py
-    } else if (debug) {
-        if (touchingPlayer) {
-            ctx.strokeStyle = "orange"
-            ctx.lineWidth = 2
-            ctx.strokeRect(item.x * 16 + 1, item.y * 16 + 1, 22, 22)
-        }
     }
 }
 
@@ -585,6 +582,7 @@ F.render = function () {
         (player.y + 0 * timeDiff) * 16,
     )
     ctx.restore()
+    F.drawText("X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3), 30)
     requestAnimationFrame(F.render)
 }
 /**
