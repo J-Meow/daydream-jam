@@ -5,7 +5,9 @@ const log = console.log
 var cameraScale = 4
 var enableDebug = true // Shift must be held as well
 var currentLevel = 0
-var died = false, dieFinal = false, dieResetTime = -1
+var died = false,
+    dieFinal = false,
+    dieResetTime = -1
 
 /**
  * @typedef {object} Player
@@ -359,6 +361,7 @@ F.die = function () {
         died = true
         dieResetTime = Date.now() + (dieFinal ? 1500 : 750)
         game.levelData.forEach(F.addDataToLevel) // Add data to each level, again
+        data.lives = 5
         F.loadLevel(0)
     } else {
         F.loadLevel(currentLevel)
@@ -781,9 +784,18 @@ F.render = function () {
             // ...
         }
         if (diff < 500) {
-            ctx.fillStyle = "#000000" + ("0" + Math.floor(Math.min(diff / 4, 255)).toString(16)).slice(-2)
+            ctx.fillStyle =
+                "#000000" +
+                ("0" + Math.floor(Math.min(diff / 4, 255)).toString(16)).slice(
+                    -2,
+                )
         } else {
-            ctx.fillStyle = "#ffffff" + ("0" + Math.floor(Math.min((diff - 500) / 4, 255)).toString(16)).slice(-2)
+            ctx.fillStyle =
+                "#ffffff" +
+                (
+                    "0" +
+                    Math.floor(Math.min((diff - 500) / 4, 255)).toString(16)
+                ).slice(-2)
         }
         console.log(diff, ctx.fillStyle)
         ctx.fillRect(0, 0, game.w, game.h)
