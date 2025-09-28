@@ -60,7 +60,7 @@ const player = {
     x: 0,
     y: 0,
     xVelocity: 0,
-    yVelocity: 0
+    yVelocity: 0,
 }
 
 const camera = {
@@ -169,7 +169,7 @@ const game = {
                     ^
                     ^
   $ $ $             ^
-^^^^^^^^          ^^^
+^^^^^^^^        ^^^^^
 
          $
 
@@ -237,14 +237,25 @@ F.itemInteraction = function (item) {
         for (let i = 0; i < items.length; i++) {
             var item = items[i]
             if (item.type === "P" || item.type === "$") continue
-            var collision = checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)
+            var collision = checkAABBCollision(
+                player.x,
+                player.y,
+                1,
+                1,
+                item.x,
+                item.y,
+                1,
+                1,
+            )
             if (collision === COLLISION_TOP) {
                 player.yVelocity = 0
                 if (game.keysDown.includes("ArrowUp")) {
                     player.yVelocity = -0.2
                 }
-
-            } else if (collision === COLLISION_LEFT || collision === COLLISION_RIGHT) {
+            } else if (
+                collision === COLLISION_LEFT ||
+                collision === COLLISION_RIGHT
+            ) {
                 player.xVelocity = 0
             }
         }
@@ -271,9 +282,16 @@ const COLLISION_RIGHT = 4
 const COLLISION_ALL = 5 // Full overlap
 
 function checkAABBCollision(
-    x1, y1, w1, h1,        // Moving Rect 1 (e.g., Player)
-    x2, y2, w2, h2,        // Static Rect 2 (e.g., Platform)
-    deltaX, deltaY         // Velocity of Rect 1
+    x1,
+    y1,
+    w1,
+    h1, // Moving Rect 1 (e.g., Player)
+    x2,
+    y2,
+    w2,
+    h2, // Static Rect 2 (e.g., Platform)
+    deltaX,
+    deltaY, // Velocity of Rect 1
 ) {
     // Center coordinates for Rect 1 and 2
     const center1X = x1 + w1 / 2
@@ -303,10 +321,10 @@ function checkAABBCollision(
             if (Math.abs(deltaX) > 0.1) {
                 // Determine direction based on center offset (dx) and velocity (deltaX)
                 // Use dx if velocity is not zero for robustness
-                return (dx > 0) ? COLLISION_RIGHT : COLLISION_LEFT
+                return dx > 0 ? COLLISION_RIGHT : COLLISION_LEFT
             } else {
                 // If no velocity, rely purely on center offset
-                return (dx > 0) ? COLLISION_RIGHT : COLLISION_LEFT
+                return dx > 0 ? COLLISION_RIGHT : COLLISION_LEFT
             }
         } else {
             // Collision is resolved on the Y axis (Top or Bottom)
@@ -318,10 +336,10 @@ function checkAABBCollision(
                 // If the player is moving DOWN (positive deltaY), they hit the TOP of the platform.
 
                 // Note: Assuming positive Y is DOWN (common for computer graphics)
-                return (dy > 0) ? COLLISION_BOTTOM : COLLISION_TOP
+                return dy > 0 ? COLLISION_BOTTOM : COLLISION_TOP
             } else {
                 // If no velocity, rely purely on center offset
-                return (dy > 0) ? COLLISION_BOTTOM : COLLISION_TOP
+                return dy > 0 ? COLLISION_BOTTOM : COLLISION_TOP
             }
         }
     }
@@ -373,10 +391,20 @@ F.render = function () {
         var type = item.type
         var split = lvl.keys[type].split("/")
         if (type !== "P") {
-            F.renderSprite(split[0], split[1], (item.x + item.dx * timeDiff * 0.06) * 16, (item.y + item.dy * timeDiff * 0.06) * 16)
+            F.renderSprite(
+                split[0],
+                split[1],
+                (item.x + item.dx * timeDiff * 0.06) * 16,
+                (item.y + item.dy * timeDiff * 0.06) * 16,
+            )
         }
     }
-    F.renderSprite("main", "player", (player.x + player.dx / 60 * timeDiff) * 16, (player.y + player.dy / 60 * timeDiff) * 16)
+    F.renderSprite(
+        "main",
+        "player",
+        (player.x + (player.dx / 60) * timeDiff) * 16,
+        (player.y + (player.dy / 60) * timeDiff) * 16,
+    )
     ctx.restore()
     requestAnimationFrame(F.render)
 }
