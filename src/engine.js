@@ -97,10 +97,11 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 })
 
-F.drawText = function (text, size = 24) {
-    ctx.font = size + "px serif"
+F.drawText = function (text, y, size = 24) {
+    ctx.font = size + "px press-start-regular"
+    ctx.fillStyle = "red"
     // ctx.textBaseline="bottom"
-    ctx.fillText(text, 10, 50)
+    ctx.fillText(text, 10, y)
 }
 
 
