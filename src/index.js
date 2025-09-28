@@ -3,8 +3,9 @@ const canvas = document.getElementsByTagName("canvas")[0]
 const ctx = canvas.getContext("2d")
 const log = console.log
 var cameraScale = 4
-var enableDebug = false // Shift must be held as well
+var enableDebug = true // Shift must be held as well
 var currentLevel = 0
+var died = false, dieFinal = false, dieResetTime = -1
 
 /**
  * @typedef {object} Player
@@ -336,8 +337,14 @@ game.levelData.forEach(F.addDataToLevel) // Add data to each level
 
 F.die = function () {
     document.getElementById("deathSFX").play()
-    data.lives--
-    F.loadLevel(currentLevel)
+    if (--data.lives <= 0) {
+        died = true
+        dieResetTime = Date.now() + dieFinal ? 1500 : 750
+        game.levelData.forEach(F.addDataToLevel) // Add data to each level, again
+        F.loadLevel(0)
+    } else {
+        F.loadLevel(currentLevel)
+    }
 }
 
 F.itemInteraction = function (item) {
@@ -744,6 +751,23 @@ var frame = 0
  * Main rendering function.
  */
 F.render = function () {
+    requestAnimationFrame(F.render)
+    if (died) {
+        var time = Date.now()
+        died = time <= dieResetTime
+        var diff = 1000 - time + dieResetTime
+        if (dieFinal) {
+            // ...
+        }
+        if (diff < 500) {
+            ctx.fillStyle = "#000000" + ("0" + Math.floor(Math.min(diff / 4, 255)).toString(16)).slice(-2)
+        } else {
+            ctx.fillStyle = "#ffffff" + ("0" + Math.floor(Math.min((diff - 500) / 4, 255)).toString(16)).slice(-2)
+        }
+        console.log(diff, ctx.fillStyle)
+        ctx.fillRect(0, 0, game.w, game.h)
+        return
+    }
     ctx.clearRect(0, 0, game.w, game.h)
     if (player.y < 24) {
         ctx.fillStyle = "#ccf"
@@ -862,7 +886,6 @@ F.render = function () {
             30 + Math.sin((time + 3200) / 650) * 4,
             5,
         )
-    requestAnimationFrame(F.render)
 }
 /**
  * Updates and handles logic
@@ -876,7 +899,7 @@ F.update = function () {
         document.getElementById("menu").removeAttribute("style")
         document.getElementById("about").style.display = "none"
         return
-    } else {
+    } else if (!died) {
         // logic
         var lvl = activeLevel
         var items = lvl.data
@@ -959,7 +982,7 @@ F.update = function () {
             document.getElementById("splash").classList.add("animating")
             setTimeout(() => {
                 document.getElementById("splash").style.display = "none"
-            }, 3000)
+            }, 2900)
         }
         F.addClickEvent("splash", () => {
             startSplashAnimation()
