@@ -29,6 +29,7 @@ var enableDebug = true // Shift must be held as well
 /**
  * @typedef {object} Level
  * @property {string} name Name of level.
+ * @property {Item[]} data Data of level.
  * @property {number} keys Keys mapping to sprites.
  * @property {Item[]} items Additional items that might need to be added to the object. This, for example, can used to add objects in partial coordinates.
  * @property {function(Item): void} addFunc Modify how certain objects are created at runtime (from the map, not items).
@@ -59,7 +60,7 @@ const player = {
     x: 0,
     y: 0,
     xVelocity: 0,
-    yVelocity: 0,
+    yVelocity: 0
 }
 
 const camera = {
@@ -224,17 +225,33 @@ F.itemInteraction = function (item) {
     var touchingPlayer = F.touchingPlayer(item)
     if (item.type === "P") {
         if (F.heldKey("ArrowRight") && !F.heldKey("ArrowLeft")) {
-            player.xVelocity = 0.15
+            player.xVelocity = 0.15 + 0.25 * player.xVelocity
         } else if (F.heldKey("ArrowLeft") && !F.heldKey("ArrowRight")) {
-            player.xVelocity = -0.15
+            player.xVelocity = -0.15 - 0.25 * player.xVelocity
         }
-        if (game.keysDown.includes("ArrowUp")) {
-            player.yVelocity = -0.2
+        player.px = player.x
+        player.xVelocity *= 0.8
+        player.py = player.y
+        player.yVelocity += 0.008
+        var items = activeLevel.data
+        for (let i = 0; i < items.length; i++) {
+            var item = items[i]
+            if (item.type === "P" || item.type === "$") continue
+            var collision = checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)
+            if (collision === COLLISION_TOP) {
+                player.yVelocity = 0
+                if (game.keysDown.includes("ArrowUp")) {
+                    player.yVelocity = -0.2
+                }
+
+            } else if (collision === COLLISION_LEFT || collision === COLLISION_RIGHT) {
+                player.xVelocity = 0
+            }
         }
         player.x += player.xVelocity
-        player.xVelocity *= 0.8
         player.y += player.yVelocity
-        player.yVelocity += 0.008
+        player.dx = player.xVelocity
+        player.dy = player.yVelocity
     } else if (debug) {
         if (touchingPlayer) {
             ctx.strokeStyle = "orange"
@@ -244,6 +261,75 @@ F.itemInteraction = function (item) {
     }
 }
 
+// Rectangle to rectangle collision detection
+// Define a structure or constants for the result
+const COLLISION_NONE = 0
+const COLLISION_TOP = 1
+const COLLISION_BOTTOM = 2
+const COLLISION_LEFT = 3
+const COLLISION_RIGHT = 4
+const COLLISION_ALL = 5 // Full overlap
+
+function checkAABBCollision(
+    x1, y1, w1, h1,        // Moving Rect 1 (e.g., Player)
+    x2, y2, w2, h2,        // Static Rect 2 (e.g., Platform)
+    deltaX, deltaY         // Velocity of Rect 1
+) {
+    // Center coordinates for Rect 1 and 2
+    const center1X = x1 + w1 / 2
+    const center1Y = y1 + h1 / 2
+    const center2X = x2 + w2 / 2
+    const center2Y = y2 + h2 / 2
+
+    // Distance between centers
+    const dx = center1X - center2X
+    const dy = center1Y - center2Y
+
+    // Sum of half-widths and half-heights
+    const halfWidths = (w1 + w2) / 2
+    const halfHeights = (h1 + h2) / 2
+
+    // Check for collision
+    if (Math.abs(dx) < halfWidths && Math.abs(dy) < halfHeights) {
+        // Penetration depth on X and Y axes
+        const overlapX = halfWidths - Math.abs(dx)
+        const overlapY = halfHeights - Math.abs(dy)
+
+        // The collision occurs on the axis with the *least* penetration.
+        if (overlapX < overlapY) {
+            // Collision is resolved on the X axis (Left or Right)
+
+            // Use velocity to help disambiguate edge cases (optional but helpful)
+            if (Math.abs(deltaX) > 0.1) {
+                // Determine direction based on center offset (dx) and velocity (deltaX)
+                // Use dx if velocity is not zero for robustness
+                return (dx > 0) ? COLLISION_RIGHT : COLLISION_LEFT
+            } else {
+                // If no velocity, rely purely on center offset
+                return (dx > 0) ? COLLISION_RIGHT : COLLISION_LEFT
+            }
+        } else {
+            // Collision is resolved on the Y axis (Top or Bottom)
+
+            // Use velocity to help disambiguate corner/edge cases
+            if (deltaY !== 0) {
+                // Determine direction based on center offset (dy) and velocity (deltaY)
+                // If the player is moving UP (negative deltaY), they hit the BOTTOM of the platform.
+                // If the player is moving DOWN (positive deltaY), they hit the TOP of the platform.
+
+                // Note: Assuming positive Y is DOWN (common for computer graphics)
+                return (dy > 0) ? COLLISION_BOTTOM : COLLISION_TOP
+            } else {
+                // If no velocity, rely purely on center offset
+                return (dy > 0) ? COLLISION_BOTTOM : COLLISION_TOP
+            }
+        }
+    }
+
+    return COLLISION_NONE
+}
+
+/** @type {Level} */
 var activeLevel = null
 F.loadLevel = function (id) {
     activeLevel = game.levelData[id]
@@ -268,6 +354,7 @@ var frame = 0
  * Main rendering function.
  */
 F.render = function () {
+    ctx.clearRect(0, 0, game.w, game.h)
     var lvl = activeLevel
     var items = lvl.data
     ctx.save()
@@ -275,15 +362,21 @@ F.render = function () {
         Math.floor(-camera.xCenter * 16 * cameraScale + game.w / 2),
         Math.floor(-camera.yCenter * 16 * cameraScale + game.h / 2),
     )
+    var timeDiff = Date.now() - lastTime
+    for (let t = 0; t < timeDiff; t++) {
+        camera.xCenter = camera.xCenter + (player.x - camera.xCenter) * 0.01
+        camera.yCenter = camera.yCenter + (player.y - camera.yCenter) * 0.01
+    }
     ctx.scale(cameraScale, cameraScale)
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
         var type = item.type
         var split = lvl.keys[type].split("/")
-        if (type !== "P")
-            F.renderSprite(split[0], split[1], item.x * 16, item.y * 16)
+        if (type !== "P") {
+            F.renderSprite(split[0], split[1], (item.x + item.dx * timeDiff * 0.06) * 16, (item.y + item.dy * timeDiff * 0.06) * 16)
+        }
     }
-    F.renderSprite("main", "player", player.x * 16, player.y * 16)
+    F.renderSprite("main", "player", (player.x + player.dx / 60 * timeDiff) * 16, (player.y + player.dy / 60 * timeDiff) * 16)
     ctx.restore()
     requestAnimationFrame(F.render)
 }
@@ -291,8 +384,6 @@ F.render = function () {
  * Updates and handles logic
  */
 F.update = function () {
-    ctx.clearRect(0, 0, game.w, game.h)
-
     debug = enableDebug && F.heldKey("Shift")
     if (F.heldKey("Escape")) {
         canvas.style.display = "none"
@@ -305,18 +396,19 @@ F.update = function () {
         var items = lvl.data
         for (let i = 0; i < items.length; i++) {
             var item = items[i]
-            F.itemInteraction(item)
-            item.dx = item.x - item.px
-            item.dy = item.y - item.py
             item.px = item.x
             item.py = item.y
+            F.itemInteraction(item)
+            if (item.type !== "P") {
+                item.dx = item.x - item.px
+                item.dy = item.y - item.py
+            }
         }
     }
+    lastTime = Date.now()
     game.keysDown.length = 0
     game.keysUp.length = 0
-    camera.xCenter = camera.xCenter + (player.x - camera.xCenter) * 0.05
-    camera.yCenter = camera.yCenter + (player.y - camera.yCenter) * 0.05
-    setTimeout(F.update, 1000 / 60)
+    setTimeout(F.update, frame % 3 === 0 ? 16 : 17)
 }
 
 // Add events to buttons
