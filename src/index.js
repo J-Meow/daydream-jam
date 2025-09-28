@@ -660,6 +660,12 @@ F.update = function () {
         function startSplashAnimation() {
             if (splashAnimationPlayed) return
             splashAnimationPlayed = true
+            document.getElementById("menuThemeIntro").play()
+            document
+                .getElementById("menuThemeIntro")
+                .addEventListener("ended", () => {
+                    document.getElementById("menuThemeLoop").play()
+                })
             document.getElementById("splash").classList.add("animating")
             setTimeout(() => {
                 document.getElementById("splash").style.display = "none"
