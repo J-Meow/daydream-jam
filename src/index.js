@@ -80,7 +80,7 @@ const game = {
     keysUp: [],
     data: {
         player: player,
-        lives: 0
+        lives: 3
     },
     canvas: canvas,
     ctx: ctx,
@@ -162,13 +162,14 @@ const game = {
                 "/": "tiles/right1x3",
                 3: "tiles/wallBottom",
                 t: "tiles/verticalBottom",
+                v: "tiles/spike",
             },
             items: [
-                {
-                    type: "B",
-                    x: 10,
-                    y: 8,
-                },
+                // {
+                //     type: "B",
+                //     x: 10,
+                //     y: 8,
+                // },
             ],
             addFunc: function (obj) {
                 // obj.
@@ -179,10 +180,10 @@ const game = {
     ! ?             {^}
 {^^^^^^}        {^^^^^^^}
 [______]        [_______]                  ^
+                    vv                     0
                                            0
                                            0
-                                           0
-                                           0
+            B                              0
         {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0
         [______________________________0   0
                                        0   0
@@ -228,6 +229,7 @@ F.addDataToLevel = function (lvl) {
     var map = lvl.map
     var data = []
     var id = 0
+    var addFunc = lvl.addFunc
     var mapLines = map.split("\n")
     for (let i = 0; i < mapLines.length; i++) {
         var l = mapLines[i]
@@ -235,7 +237,7 @@ F.addDataToLevel = function (lvl) {
             var char = l[c]
             var m = keys[char]
             if (m) {
-                data.push({ id: id++, type: char, x: c, y: i })
+                data.push(addFunc({ id: id++, type: char, x: c, y: i }))
             }
         }
     }
@@ -287,26 +289,52 @@ F.itemInteraction = function (item) {
                 item.type !== "b" &&
                 item.type !== "takencoin" &&
                 item.type !== "?" &&
-                item.type !== "!",
+                item.type !== "!"
         )
 
         player.y += player.yVelocity
         var isOnGround = false
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
-            if (
-                item.type === "B" &&
-                checkAABBCollision(
+            if (item.type === "v") {
+                if (checkAABBCollision(
                     player.x,
                     player.y,
                     1,
                     1,
                     item.x + 0.25,
-                    item.y + 0.9,
+                    item.y,
                     0.5,
-                    0.1,
-                )
-            ) {
+                    0.3)) {
+                    data.lives--
+                    F.loadLevel(0)
+                }
+                if (checkAABBCollision(
+                    player.x,
+                    player.y,
+                    1,
+                    1,
+                    item.x + 0.25,
+                    -9999999999999,
+                    0.5,
+                    999999999999999)) {
+                    item.falling = 0.05
+                }
+                if (item.falling) {
+                    item.y += item.falling
+                    item.falling = (item.falling + 0.02) * 0.95
+                }
+                continue
+            }
+            if (item.type === "B" && checkAABBCollision(
+                player.x,
+                player.y,
+                1,
+                1,
+                item.x + 0.25,
+                item.y + 0.9,
+                0.5,
+                0.1)) {
                 player.yVelocity = -0.05
                 item.type = "b"
             }
@@ -583,6 +611,9 @@ F.render = function () {
     )
     ctx.restore()
     F.drawText("X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3), 30)
+    if (data.lives > 0) F.renderSprite("tiles", "heart", 30, 30, 5)
+    if (data.lives > 1) F.renderSprite("tiles", "heart", 120, 30, 5)
+    if (data.lives > 2) F.renderSprite("tiles", "heart", 210, 30, 5)
     requestAnimationFrame(F.render)
 }
 /**
