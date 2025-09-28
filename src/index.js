@@ -143,7 +143,7 @@ const game = {
     },
     levelData: [
         {
-            name: "Main Level",
+            name: "Second Level",
             keys: {
                 P: "main/player1",
                 p: "main/player2",
@@ -180,7 +180,7 @@ const game = {
                 {
                     type: "B",
                     x: 10,
-                    y: 9,
+                    y: 12,
                     click: function () {
                         activeLevel.data.filter(
                             (x) => x.x == 2 && x.y == 2,
@@ -192,6 +192,36 @@ const game = {
                     x: 2,
                     y: 2,
                     click: function () {
+                        activeLevel.data.filter(
+                            (x) => x.x == 26 && x.y == 12,
+                        )[0].type = "B"
+                    },
+                },
+                {
+                    type: "b",
+                    x: 26,
+                    y: 12,
+                    click: function () {
+                        activeLevel.data.filter(
+                            (x) => x.x == 23 && x.y == 6,
+                        )[0].type = "B"
+                    },
+                },
+                {
+                    type: "b",
+                    x: 23,
+                    y: 6,
+                    click: function () {
+                        activeLevel.data.filter(
+                            (x) => x.x == 30 && x.y == 10,
+                        )[0].type = "B"
+                    },
+                },
+                {
+                    type: "b",
+                    x: 30,
+                    y: 10,
+                    click: function () {
                         activeLevel.data.forEach((item) => {
                             if (item.internalID === 1) {
                                 item.falling = 0.05
@@ -201,9 +231,9 @@ const game = {
                 },
                 {
                     type: "2",
-                    x: 22,
-                    y: 5,
-                    height: 5,
+                    x: 39,
+                    y: 9,
+                    height: 2,
                     maxFall: 12,
                     internalID: 1,
                 },
@@ -212,88 +242,21 @@ const game = {
                 // obj.
                 return obj
             },
-            map: `                    {^}
-     P              000
-                    000
-{^^^^^^}            000^}
-[______]            [___]                  ^
-                                           0
-                                           0
-                                           0
-                                           0
-                                           0
-        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0
-        [______________________________0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0
-                                       0   0    {^}
-                                       0   0    000
-                                       0   [_______
-                                       0       vvvv
-                                       0   
-                                       0          f
-                                       0^^^^^^^^^^^^^^^^
-                                       [_______________]`,
-        },
-        {
-            name: "Second Level",
-            keys: {
-                P: "main/player1",
-                p: "main/player2",
-                "!": "main/!",
-                "?": "main/?",
-                "{": "tiles/topLeft3x3",
-                "^": "tiles/topMiddle3x3",
-                "}": "tiles/topRight3x3",
-                S: "tiles/purpleS", // Purple spring
-                s: "tiles/blueS", // Blue spring
-                "(": "tiles/middleLeft3x3",
-                0: "tiles/middleMiddle3x3",
-                ")": "tiles/middleRight3x3",
-                f: "tiles/flag",
-                $: "tiles/coin",
-                "[": "tiles/bottomLeft3x3",
-                _: "tiles/bottomMiddle3x3",
-                "]": "tiles/bottomRight3x3",
-                1: "tiles/wallTop",
-                u: "tiles/verticalTop",
-                B: "tiles/button",
-                b: "tiles/buttonPressed",
-                "*": "tiles/small1x1",
-                2: "tiles/wallMiddle",
-                m: "tiles/verticalMiddle",
-                ",": "tiles/left1x3",
-                ".": "tiles/middle1x3",
-                "/": "tiles/right1x3",
-                3: "tiles/wallBottom",
-                t: "tiles/verticalBottom",
-                v: "tiles/spike",
-            },
-            items: [],
-            addFunc: function (obj) {
-                // obj.
-                return obj
-            },
             map: `                    
      P              
                     
-{^^^^^^}            
-[______]                                   ^
-                                           0
-                                           0
-                                           0
-                                           0
-                                           0
-        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}   0
-        [______________________________0   0
+{^^^^^^}                                   ^
+[______]                                   0
+                        {}                 0
+                        00                 0
+                     {^^00             {^^^0
+                     00000             [___0
+                  {^^00000                 0
+                  00000000                 0
+               {^^00000000   {^^^^}  {^}   0
+               00000000000   000000  000   0
+        {^^^^^^00000000000^^^000000  000   0
+        [_________________________]  [_0   0
                                        0   0
                                        0   0
                                        0   0
