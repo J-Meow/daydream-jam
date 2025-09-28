@@ -149,32 +149,20 @@ const game = {
                 ";": "tiles/;",
                 ",": "tiles/,",
             },
-            items: [{ type: "P", x: 0, y: 13.4 }],
+            items: [],
             addFunc: function (obj) {
                 // obj.
                 return obj
             },
-            map: `                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-                    ^
-  $ $ $             ^
-^^^^^^^^        ^^^^^
+            map: `
+     P              {^}
+  $ $ $             [_]
+{^^^^^^}        {^^^^^^^}
 
          $
 
           $
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^`,
+        {^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^}`,
         },
     ],
     consts: {
@@ -237,21 +225,26 @@ F.itemInteraction = function (item) {
         for (let i = 0; i < items.length; i++) {
             var item = items[i]
             if (item.type === "P" || item.type === "$") continue
-            var collision = checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)
+            var collision = checkAABBCollision(player.x, player.y + 0.0000001, 1, 1, item.x, item.y, 1, 1)
             if (collision === COLLISION_TOP) {
                 player.yVelocity = 0
+                player.y = Math.floor(player.y)
                 if (game.keysDown.includes("ArrowUp")) {
                     player.yVelocity = -0.2
                 }
-
             } else if (collision === COLLISION_LEFT || collision === COLLISION_RIGHT) {
                 player.xVelocity = 0
+                player.x = Math.round(player.x)
             }
         }
         player.x += player.xVelocity
         player.y += player.yVelocity
         player.dx = player.xVelocity
         player.dy = player.yVelocity
+
+        if (player.y > 30) {
+            F.loadLevel(0)
+        }
     } else if (debug) {
         if (touchingPlayer) {
             ctx.strokeStyle = "orange"
@@ -261,8 +254,6 @@ F.itemInteraction = function (item) {
     }
 }
 
-// Rectangle to rectangle collision detection
-// Define a structure or constants for the result
 const COLLISION_NONE = 0
 const COLLISION_TOP = 1
 const COLLISION_BOTTOM = 2
@@ -270,12 +261,8 @@ const COLLISION_LEFT = 3
 const COLLISION_RIGHT = 4
 const COLLISION_ALL = 5 // Full overlap
 
-function checkAABBCollision(
-    x1, y1, w1, h1,        // Moving Rect 1 (e.g., Player)
-    x2, y2, w2, h2,        // Static Rect 2 (e.g., Platform)
-    deltaX, deltaY         // Velocity of Rect 1
+function checkAABBCollision(x1, y1, w1, h1, x2, y2, w2, h2, deltaX, deltaY
 ) {
-    // Center coordinates for Rect 1 and 2
     const center1X = x1 + w1 / 2
     const center1Y = y1 + h1 / 2
     const center2X = x2 + w2 / 2
@@ -298,29 +285,16 @@ function checkAABBCollision(
         // The collision occurs on the axis with the *least* penetration.
         if (overlapX < overlapY) {
             // Collision is resolved on the X axis (Left or Right)
-
-            // Use velocity to help disambiguate edge cases (optional but helpful)
             if (Math.abs(deltaX) > 0.1) {
-                // Determine direction based on center offset (dx) and velocity (deltaX)
-                // Use dx if velocity is not zero for robustness
                 return (dx > 0) ? COLLISION_RIGHT : COLLISION_LEFT
             } else {
-                // If no velocity, rely purely on center offset
                 return (dx > 0) ? COLLISION_RIGHT : COLLISION_LEFT
             }
         } else {
             // Collision is resolved on the Y axis (Top or Bottom)
-
-            // Use velocity to help disambiguate corner/edge cases
             if (deltaY !== 0) {
-                // Determine direction based on center offset (dy) and velocity (deltaY)
-                // If the player is moving UP (negative deltaY), they hit the BOTTOM of the platform.
-                // If the player is moving DOWN (positive deltaY), they hit the TOP of the platform.
-
-                // Note: Assuming positive Y is DOWN (common for computer graphics)
                 return (dy > 0) ? COLLISION_BOTTOM : COLLISION_TOP
             } else {
-                // If no velocity, rely purely on center offset
                 return (dy > 0) ? COLLISION_BOTTOM : COLLISION_TOP
             }
         }
