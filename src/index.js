@@ -502,6 +502,12 @@ var frame = 0
  */
 F.render = function () {
     ctx.clearRect(0, 0, game.w, game.h)
+    if (player.y < 24) {
+        ctx.fillStyle = "#ccf"
+        ctx.globalAlpha = 1 - (Math.min(24, Math.max(player.y, 12)) - 12) / 12
+        ctx.fillRect(0, 0, game.w, game.h)
+        ctx.globalAlpha = 1
+    }
     var lvl = activeLevel
     var items = lvl.data
     ctx.save()
