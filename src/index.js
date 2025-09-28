@@ -212,40 +212,67 @@ game.levelData.forEach(F.addDataToLevel) // Add data to each level
 F.itemInteraction = function (item) {
     var touchingPlayer = F.touchingPlayer(item)
     if (item.type === "P") {
+        // Save old position
+        player.px = player.x;
+        player.py = player.y;
+        
+        // Apply more consistent horizontal movement
         if (F.heldKey("ArrowRight") && !F.heldKey("ArrowLeft")) {
-            player.xVelocity = 0.15 + 0.25 * player.xVelocity
+            player.xVelocity = Math.min(0.25, player.xVelocity + 0.05);
         } else if (F.heldKey("ArrowLeft") && !F.heldKey("ArrowRight")) {
-            player.xVelocity = -0.15 - 0.25 * player.xVelocity
+            player.xVelocity = Math.max(-0.25, player.xVelocity - 0.05);
+        } else {
+            // Apply friction when no keys pressed
+            player.xVelocity *= 0.7;
         }
-        player.px = player.x
-        player.xVelocity *= 0.8
-        player.py = player.y
-        player.yVelocity += 0.008
-        var items = activeLevel.data
-        for (let i = 0; i < items.length; i++) {
-            var item = items[i]
-            if (item.type === "P" || item.type === "$") continue
-            var collision = checkAABBCollision(player.x, player.y + 0.0000001, 1, 1, item.x, item.y, 1, 1)
-            if (collision === COLLISION_TOP) {
-                player.yVelocity = 0
-                player.y = Math.floor(player.y)
-                if (game.keysDown.includes("ArrowUp")) {
-                    player.yVelocity = -0.2
+        
+        // Apply gravity
+        player.yVelocity += 0.01;
+        
+        // --- New Simplified Physics Engine ---
+
+        var items = activeLevel.data;
+        var solidItems = items.filter(item => item.type !== "P" && item.type !== "$");
+
+        // --- Y-Axis Movement and Collision ---
+        player.y += player.yVelocity;
+        var isOnGround = false;
+        for (let i = 0; i < solidItems.length; i++) {
+            var item = solidItems[i];
+            if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
+                if (player.yVelocity > 0) { // Moving down
+                    player.y = item.y - 1; // Place on top of the block
+                    player.yVelocity = 0;
+                    isOnGround = true;
+                } else if (player.yVelocity < 0) { // Moving up
+                    player.y = item.y + 1; // Place below the block
+                    player.yVelocity = 0;
                 }
             }
         }
-        for (let i = 0; i < items.length; i++) {
-            var collision = checkAABBCollision(player.x, player.y - 0.0000001, 1, 1, item.x, item.y, 1, 1)
-            if (collision === COLLISION_LEFT || collision === COLLISION_RIGHT) {
-                player.xVelocity = 0
-                player.x = Math.round(player.x)
+
+        // --- X-Axis Movement and Collision ---
+        player.x += player.xVelocity;
+        for (let i = 0; i < solidItems.length; i++) {
+            var item = solidItems[i];
+            if (checkAABBCollision(player.x, player.y, 1, 1, item.x, item.y, 1, 1)) {
+                if (player.xVelocity > 0) { // Moving right
+                    player.x = item.x - 1;
+                    player.xVelocity = 0;
+                } else if (player.xVelocity < 0) { // Moving left
+                    player.x = item.x + 1;
+                    player.xVelocity = 0;
+                }
             }
         }
 
-        player.x += player.xVelocity
-        player.y += player.yVelocity
-        player.dx = player.xVelocity
-        player.dy = player.yVelocity
+        // --- Jumping ---
+        if (isOnGround && (game.keysDown.includes("ArrowUp") || F.heldKey("ArrowUp"))) {
+            player.yVelocity = -0.3;
+        }
+        
+        player.dx = player.x - player.px;
+        player.dy = player.y - player.py;
 
         if (player.y > 30) {
             F.loadLevel(0)
@@ -266,46 +293,126 @@ const COLLISION_LEFT = 3
 const COLLISION_RIGHT = 4
 const COLLISION_ALL = 5 // Full overlap
 
-function checkAABBCollision(x1, y1, w1, h1, x2, y2, w2, h2, deltaX, deltaY
-) {
-    const center1X = x1 + w1 / 2
-    const center1Y = y1 + h1 / 2
-    const center2X = x2 + w2 / 2
-    const center2Y = y2 + h2 / 2
+/**
+ * Performs swept AABB collision detection to handle fast-moving objects.
+ * @param {number} x Current X position of moving rect
+ * @param {number} y Current Y position of moving rect
+ * @param {number} w Width of moving rect
+ * @param {number} h Height of moving rect
+ * @param {number} vx X velocity of moving rect
+ * @param {number} vy Y velocity of moving rect
+ * @param {number} sx Static rect X position
+ * @param {number} sy Static rect Y position
+ * @param {number} sw Static rect width
+ * @param {number} sh Static rect height
+ * @returns {{hit: boolean, time: number, normal: {x: number, y: number}}} Collision result
+ */
+function sweptAABB(x, y, w, h, vx, vy, sx, sy, sw, sh) {
+    // Early exit if no velocity
+    if (vx === 0 && vy === 0) {
+        // We don't consider initial overlap as collision
+        // This allows the player to move when starting in an overlapping state
+        return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+    }
 
-    // Distance between centers
-    const dx = center1X - center2X
-    const dy = center1Y - center2Y
+    // Expand the static rect by the moving rect's dimensions
+    const expandedX = sx - w;
+    const expandedY = sy - h;
+    const expandedW = sw + w;
+    const expandedH = sh + h;
 
-    // Sum of half-widths and half-heights
-    const halfWidths = (w1 + w2) / 2
-    const halfHeights = (h1 + h2) / 2
+    // Ray-AABB intersection
+    let tNear = -Infinity;
+    let tFar = Infinity;
+    let normal = { x: 0, y: 0 };
 
-    // Check for collision
-    if (Math.abs(dx) < halfWidths && Math.abs(dy) < halfHeights) {
-        // Penetration depth on X and Y axes
-        const overlapX = halfWidths - Math.abs(dx)
-        const overlapY = halfHeights - Math.abs(dy)
+    // X-axis
+    if (vx === 0) {
+        if (x < expandedX || x > expandedX + expandedW) {
+            return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+        }
+    } else {
+        const t1 = (expandedX - x) / vx;
+        const t2 = (expandedX + expandedW - x) / vx;
+        const tMin = Math.min(t1, t2);
+        const tMax = Math.max(t1, t2);
+        
+        if (tMin > tNear) {
+            tNear = tMin;
+            normal = { x: vx > 0 ? -1 : 1, y: 0 };
+        }
+        tFar = Math.min(tFar, tMax);
+    }
 
-        // The collision occurs on the axis with the *least* penetration.
-        if (overlapX < overlapY) {
-            // Collision is resolved on the X axis (Left or Right)
-            if (Math.abs(deltaX) > 0.1) {
-                return (dx > 0) ? COLLISION_RIGHT : COLLISION_LEFT
-            } else {
-                return (dx > 0) ? COLLISION_RIGHT : COLLISION_LEFT
-            }
-        } else {
-            // Collision is resolved on the Y axis (Top or Bottom)
-            if (deltaY !== 0) {
-                return (dy > 0) ? COLLISION_BOTTOM : COLLISION_TOP
-            } else {
-                return (dy > 0) ? COLLISION_BOTTOM : COLLISION_TOP
+    // Y-axis
+    if (vy === 0) {
+        if (y < expandedY || y > expandedY + expandedH) {
+            return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+        }
+    } else {
+        const t1 = (expandedY - y) / vy;
+        const t2 = (expandedY + expandedH - y) / vy;
+        const tMin = Math.min(t1, t2);
+        const tMax = Math.max(t1, t2);
+        
+        if (tMin > tNear) {
+            tNear = tMin;
+            normal = { x: 0, y: vy > 0 ? -1 : 1 };
+        }
+        tFar = Math.min(tFar, tMax);
+    }
+
+    // Check if intersection exists
+    if (tNear > tFar || tFar < 0 || tNear > 1) {
+        return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+    }
+    
+    // Improved collision detection to avoid detecting "just touching" as collisions
+    const epsilon = 0.001; // Larger epsilon to better ignore touching edges
+    
+    // If we're already nearly touching (very small time to collision)
+    if (tNear <= epsilon) {
+        // Get the projected position after movement
+        const projectedX = x + vx;
+        const projectedY = y + vy;
+        
+        // Only consider this a collision if we're actually trying to move INTO the object
+        // and not just moving parallel or away from it
+        const dotProduct = normal.x * vx + normal.y * vy;
+        
+        if (dotProduct >= 0) {
+            // We're not moving toward the object, so ignore this collision
+            return { hit: false, time: 1, normal: { x: 0, y: 0 } };
+        }
+        
+        // Special case for vertical movement and jumps
+        if (Math.abs(normal.y) > 0 && Math.abs(vy) > 0.1) {
+            // Allow jumping when just touching the ground
+            if (normal.y > 0 && vy < 0) {
+                return { hit: false, time: 1, normal: { x: 0, y: 0 } };
             }
         }
     }
+    
+    // Valid collision detected
+    return { hit: true, time: Math.max(0, tNear), normal };
+}
 
-    return COLLISION_NONE
+/**
+ * Legacy collision check for backward compatibility.
+ */
+function checkAABBCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+    if (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2) {
+        const overlapX = Math.min(x1 + w1 - x2, x2 + w2 - x1);
+        const overlapY = Math.min(y1 + h1 - y2, y2 + h2 - y1);
+        
+        if (overlapX < overlapY) {
+            return x1 + w1 / 2 < x2 + w2 / 2 ? COLLISION_RIGHT : COLLISION_LEFT;
+        } else {
+            return y1 + h1 / 2 < y2 + h2 / 2 ? COLLISION_BOTTOM : COLLISION_TOP;
+        }
+    }
+    return COLLISION_NONE;
 }
 
 /** @type {Level} */
