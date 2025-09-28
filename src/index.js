@@ -353,23 +353,24 @@ F.itemInteraction = function (item) {
                 }
                 item.type = "b"
             }
+            var collision = checkAABBCollision(
+                player.x + 0.15,
+                player.y + 0.2,
+                0.7,
+                0.8,
+                item.x,
+                item.y,
+                1,
+                1,
+            )
             if (
                 item.type.toLowerCase() !== "b" &&
-                checkAABBCollision(
-                    player.x + 0.15,
-                    player.y + 0.2,
-                    0.7,
-                    0.8,
-                    item.x,
-                    item.y,
-                    1,
-                    1,
-                )
+                collision
             ) {
                 if (item.type === "S") {
                     if (player.yVelocity > 0) {
                         document.getElementById("regularJumpPadSFX")
-                        player.y = item.y - 1
+                        player.y = item.y + 0.999
                         player.yVelocity = -0.35
                     }
                 } else if (item.type === "$") {
@@ -380,8 +381,8 @@ F.itemInteraction = function (item) {
                         player.yVelocity = 0
                         isOnGround = true
                     } else if (player.yVelocity < 0) {
-                        player.y = item.y + 1
-                        player.yVelocity = 0
+                        player.y = item.y + 1.001
+                        player.yVelocity = player.yVelocity * -0.8
                     }
                 }
             }
@@ -396,10 +397,10 @@ F.itemInteraction = function (item) {
                 item.type.toLowerCase() !== "takencoin" &&
                 item.type.toLowerCase() !== "v" &&
                 checkAABBCollision(
-                    player.x,
-                    player.y,
-                    1,
-                    1,
+                    player.x + 0.15,
+                    player.y + 0.2,
+                    0.7,
+                    0.8,
                     item.x,
                     item.y,
                     1,
@@ -636,7 +637,7 @@ F.render = function () {
     for (let i = 0; i < items.length; i++) {
         var item = items[i]
         var type = item.type
-        if (type == "takencoin") {
+        if (type === "takencoin") {
             continue
         }
         var split = lvl.keys[type].split("/")
@@ -662,7 +663,7 @@ F.render = function () {
             "tiles",
             "heart",
             30,
-            30 + Math.sin(time / (120 - data.lives * 10)) * (12 - data.lives),
+            30 + Math.sin(time / (20 + data.lives * 10)) * (12 - data.lives),
             5,
         )
     if (data.lives > 1)
@@ -671,7 +672,7 @@ F.render = function () {
             "heart",
             120,
             30 +
-            Math.sin((time + 500) / (150 - data.lives * 10)) *
+            Math.sin((time + 500) / (30 + data.lives * 15)) *
             (10 - data.lives),
             5,
         )
@@ -680,7 +681,7 @@ F.render = function () {
             "tiles",
             "heart",
             210,
-            30 + Math.sin((time + 1000) / (300 - data.lives * 25)) * 6,
+            30 + Math.sin((time + 1000) / (200 + data.lives * 25)) * 6,
             5,
         )
     if (data.lives > 3)
