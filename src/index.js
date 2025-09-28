@@ -178,7 +178,17 @@ const game = {
                     x: 10,
                     y: 9,
                     click: function () {
-                        activeLevel.data.forEach(item => {
+                        activeLevel.data.filter(
+                            (x) => x.x == 2 && x.y == 2,
+                        )[0].type = "B"
+                    },
+                },
+                {
+                    type: "b",
+                    x: 2,
+                    y: 2,
+                    click: function () {
+                        activeLevel.data.forEach((item) => {
                             if (item.internalID === 1) {
                                 item.falling = 0.05
                             }
@@ -191,7 +201,7 @@ const game = {
                     y: 5,
                     height: 5,
                     maxFall: 12,
-                    internalID: 1
+                    internalID: 1,
                 },
             ],
             addFunc: function (obj) {
@@ -387,30 +397,30 @@ F.itemInteraction = function (item) {
                 }
                 item.type = "b"
             }
-            var collision = (item.type == "2" ? checkAABBCollision(
-                player.x + 0.15,
-                player.y + 0.2,
-                0.7,
-                0.8,
-                item.x + 0.1,
-                item.y,
-                0.8,
-                item.height || 2,
-            ) : checkAABBCollision(
-                player.x + 0.15,
-                player.y + 0.2,
-                0.7,
-                0.8,
-                item.x,
-                item.y,
-                1,
-                1,
-            ))
+            var collision =
+                item.type == "2"
+                    ? checkAABBCollision(
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x + 0.1,
+                          item.y,
+                          0.8,
+                          item.height || 2,
+                      )
+                    : checkAABBCollision(
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x,
+                          item.y,
+                          1,
+                          1,
+                      )
             if (item.type == "2") console.log(collision)
-            if (
-                item.type.toLowerCase() !== "b" &&
-                collision
-            ) {
+            if (item.type.toLowerCase() !== "b" && collision) {
                 if (item.type === "S") {
                     if (player.yVelocity > 0) {
                         document.getElementById("regularJumpPadSFX")
@@ -435,25 +445,28 @@ F.itemInteraction = function (item) {
         player.x += player.xVelocity
         for (let i = 0; i < checkedItems.length; i++) {
             var item = checkedItems[i]
-            var collision = (item.type == "2" ? checkAABBCollision(
-                player.x + 0.15,
-                player.y + 0.2,
-                0.7,
-                0.8,
-                item.x + 0.1,
-                item.y,
-                0.8,
-                item.height || 2,
-            ) : checkAABBCollision(
-                player.x + 0.15,
-                player.y + 0.2,
-                0.7,
-                0.8,
-                item.x,
-                item.y,
-                1,
-                1,
-            ))
+            var collision =
+                item.type == "2"
+                    ? checkAABBCollision(
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x + 0.1,
+                          item.y,
+                          0.8,
+                          item.height || 2,
+                      )
+                    : checkAABBCollision(
+                          player.x + 0.15,
+                          player.y + 0.2,
+                          0.7,
+                          0.8,
+                          item.x,
+                          item.y,
+                          1,
+                          1,
+                      )
             if (
                 item.type.toLowerCase() !== "b" &&
                 item.type.toLowerCase() !== "$" &&
@@ -702,21 +715,21 @@ F.render = function () {
                     split[0],
                     "wallTop",
                     (item.x + item.dx * timeDiff * 0.06) * 16,
-                    (item.y + item.dy * timeDiff * 0.06) * 16
+                    (item.y + item.dy * timeDiff * 0.06) * 16,
                 )
                 for (let t = 1; t < h - 1; t++) {
                     F.renderSprite(
                         split[0],
                         "wallMiddle",
                         (item.x + item.dx * timeDiff * 0.06) * 16,
-                        (item.y + t + item.dy * timeDiff * 0.06) * 16
+                        (item.y + t + item.dy * timeDiff * 0.06) * 16,
                     )
                 }
                 F.renderSprite(
                     split[0],
                     "wallBottom",
                     (item.x + item.dx * timeDiff * 0.06) * 16,
-                    (item.y + h - 1 + item.dy * timeDiff * 0.06) * 16
+                    (item.y + h - 1 + item.dy * timeDiff * 0.06) * 16,
                 )
             }
         } else if (type !== "P") {
@@ -735,7 +748,11 @@ F.render = function () {
         (player.y + 0 * timeDiff) * 16,
     )
     ctx.restore()
-    if (debug) F.drawText("X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3), 30)
+    if (debug)
+        F.drawText(
+            "X: " + player.x.toFixed(3) + " | Y: " + player.y.toFixed(3),
+            30,
+        )
     if (data.lives > 0)
         F.renderSprite(
             "tiles",
